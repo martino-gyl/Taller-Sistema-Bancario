@@ -1,7 +1,7 @@
 package BancoMartino.servicios.paneles;
 
-import dominio.Cuenta;
-import servicios.AplicacionBanco;
+import BancoMartino.dominio.Cuenta;
+import BancoMartino.servicios.AplicacionBanco;
 
 import java.util.Scanner;
 

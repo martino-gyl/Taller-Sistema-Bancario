@@ -1,6 +1,6 @@
 package BancoMartino.servicios;
 
-import dominio.*;
+import BancoMartino.dominio.*;
 
 import java.util.List;
 
