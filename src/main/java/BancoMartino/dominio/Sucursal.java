@@ -41,32 +41,36 @@ public class Sucursal {
         }
     }
 
+    public int siguienteNumeroCuenta(){
+        return cuentas.size()+1;
+    }
+
     public List<Cuenta> getCuentas() {
         return cuentas;
     }
 
     public void registrarCuenta(Cuenta cuenta) {
-        if (buscarCuentaPorNumero(cuenta.getNumero()) != null) {
+        if (buscarCuentaPorCbu(cuenta.getCbu()) != null) {
             throw new IllegalArgumentException("Ya existe una cuenta con ese número en la sucursal");
         }
         cuentas.add(cuenta);
     }
 
-    public void eliminarCuenta(String numeroCuenta) {
+    public void eliminarCuenta(String cbu) {
         Iterator<Cuenta> iterator = cuentas.iterator();
 
         while (iterator.hasNext()) {
             Cuenta cuenta = iterator.next();
-            if (cuenta.getNumero().equals(numeroCuenta)) {
+            if (cuenta.getCbu().equals(cbu)) {
                 iterator.remove();
                 return;
             }
         }
     }
 
-    public Cuenta buscarCuentaPorNumero(String numeroCuenta) {
+    public Cuenta buscarCuentaPorCbu(String cbu) {
         for (Cuenta cuenta : cuentas) {
-            if (cuenta.getNumero().equals(numeroCuenta)) {
+            if (cuenta.getCbu().equals(cbu)) {
                 return cuenta;
             }
         }

@@ -76,7 +76,7 @@ public class PanelAdmin extends Panel {
         System.out.println("\n--- CUENTAS DE LA SUCURSAL ---");
         for (Cuenta cuenta : cuentas) {
             System.out.println(
-                    "Número: " + cuenta.getNumero() +
+                    "CBU: " + cuenta.getCbu() +
                             " | Tipo: " + cuenta.getTipo() +
                             " | Titular: " + cuenta.getNombreCompleto() +
                             " | DNI: " + cuenta.getDni() +
@@ -101,9 +101,6 @@ public class PanelAdmin extends Panel {
         System.out.print("Dirección titular: ");
         String direccion = leerTexto();
 
-        System.out.print("Número de cuenta: ");
-        String numeroCuenta = leerTexto();
-
         System.out.print("Contraseña cuenta: ");
         String passwordCuenta = leerTexto();
 
@@ -111,7 +108,6 @@ public class PanelAdmin extends Panel {
 
         getAplicacion().crearCuenta(
                 admin,
-                numeroCuenta,
                 passwordCuenta,
                 tipo,
                 dni,
@@ -133,24 +129,24 @@ public class PanelAdmin extends Panel {
     }
 
     private void transferir(Admin admin) {
-        System.out.print("Número de cuenta origen: ");
-        String numeroOrigen = leerTexto();
+        System.out.print("CBU origen: ");
+        String cbuOrigen = leerTexto();
 
-        System.out.print("Número de cuenta destino: ");
-        String numeroDestino = leerTexto();
+        System.out.print("CBU destino: ");
+        String cbuDestino = leerTexto();
 
         System.out.print("Monto a transferir: ");
         double monto = leerDouble();
 
-        getAplicacion().transferir(admin, numeroOrigen, numeroDestino, monto);
+        getAplicacion().transferir(admin, cbuOrigen, cbuDestino, monto);
         System.out.println("Transferencia realizada correctamente.");
     }
 
     private void verBalanceCuenta() {
-        System.out.print("Número de cuenta: ");
-        String numeroCuenta = leerTexto();
+        System.out.print("Número de cbu: ");
+        String numeroCbu = leerTexto();
 
-        System.out.println("\n" + getAplicacion().resumenCuenta(numeroCuenta));
+        System.out.println("\n" + getAplicacion().resumenCuenta(numeroCbu));
     }
 
     private void verMovimientosCuenta() {
