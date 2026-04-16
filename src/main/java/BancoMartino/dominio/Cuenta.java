@@ -1,11 +1,14 @@
 package BancoMartino.dominio;
 
+import Integration.CbuService;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class Cuenta {
     private String numero;
+    private String cbu;
     private String password;
     private Sucursal sucursal;
     private double saldo;
@@ -31,6 +34,7 @@ public class Cuenta {
             String direccion
     ) {
         this.numero = numero;
+        this.cbu = CbuService.generarCbu()
         this.password = password;
         this.sucursal = sucursal;
         this.tipo = tipo;
