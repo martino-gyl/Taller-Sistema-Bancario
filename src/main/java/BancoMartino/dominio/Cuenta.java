@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.List;
 
 public class Cuenta {
-    private String numero;
     private String cbu;
     private String password;
     private Sucursal sucursal;
@@ -23,7 +22,7 @@ public class Cuenta {
     private List<Movimiento> movimientos;
 
     public Cuenta(
-            String numero,
+            String cbu,
             String password,
             Sucursal sucursal,
             TipoCuenta tipo,
@@ -33,8 +32,7 @@ public class Cuenta {
             String email,
             String direccion
     ) {
-        this.numero = numero;
-        this.cbu = CbuService.generarCbu()
+        this.cbu = cbu;
         this.password = password;
         this.sucursal = sucursal;
         this.tipo = tipo;
@@ -47,8 +45,8 @@ public class Cuenta {
         this.movimientos = new ArrayList<>();
     }
 
-    public String getNumero() {
-        return numero;
+    public String getCbu() {
+        return cbu;
     }
 
     public TipoCuenta getTipo() {

@@ -34,8 +34,8 @@ public class Admin {
         return sucursal;
     }
 
-    public Cuenta darAltaCuenta(
-            String numeroCuenta,
+    public void darAltaCuenta(
+            Banco banco,
             String passwordCuenta,
             TipoCuenta tipo,
             String dni,
@@ -48,16 +48,18 @@ public class Admin {
             throw new IllegalStateException("El admin no tiene sucursal asignada");
         }
 
-        if (sucursal.buscarCuentaPorNumero(numeroCuenta) != null) {
-            throw new IllegalArgumentException("Ya existe una cuenta con ese número en la sucursal");
+        if (banco.buscarCuentaPorEmail(email) != null) {
+            throw new IllegalArgumentException("Ya existe una cuenta con ese email");
         }
 
         if (sucursal.buscarCuentaPorDni(dni) != null) {
-            throw new IllegalArgumentException("Ya existe una cuenta asociada a ese DNI en la sucursal");
+            throw new IllegalArgumentException("Ya existe una cuenta con ese dni");
         }
 
+        String cbu = banco.generarCbu(sucursal);
+
         Cuenta cuenta = new Cuenta(
-                numeroCuenta,
+                cbu,
                 passwordCuenta,
                 sucursal,
                 tipo,
@@ -69,20 +71,19 @@ public class Admin {
         );
 
         sucursal.registrarCuenta(cuenta);
-        return cuenta;
     }
 
-    public void darBajaCuenta(String numeroCuenta) {
+    public void darBajaCuenta(String cbu) {
         if (sucursal == null) {
             throw new IllegalStateException("El admin no tiene sucursal asignada");
         }
 
-        Cuenta cuenta = sucursal.buscarCuentaPorNumero(numeroCuenta);
+        Cuenta cuenta = sucursal.buscarCuentaPorCbu(cbu);
         if (cuenta == null) {
             throw new IllegalArgumentException("La cuenta no pertenece a esta sucursal");
         }
 
-        sucursal.eliminarCuenta(numeroCuenta);
+        sucursal.eliminarCuenta(cbu);
     }
 
     public List<Cuenta> listarCuentas() {
@@ -101,13 +102,13 @@ public class Admin {
         return sucursal.calcularBalanceSucursal();
     }
 
-    public void transferir(String numeroOrigen, String numeroDestino, double monto) {
+    public void transferir(String cbuOrigen, String cbuDestino, double monto) {
         if (sucursal == null) {
             throw new IllegalStateException("El admin no tiene sucursal asignada");
         }
 
-        Cuenta origen = sucursal.buscarCuentaPorNumero(numeroOrigen);
-        Cuenta destino = sucursal.buscarCuentaPorNumero(numeroDestino);
+        Cuenta origen = sucursal.buscarCuentaPorCbu(cbuOrigen);
+        Cuenta destino = sucursal.buscarCuentaPorCbu(cbuDestino);
 
         if (origen == null || destino == null) {
             throw new IllegalArgumentException("Ambas cuentas deben pertenecer a esta sucursal");
@@ -121,19 +122,23 @@ public class Admin {
             throw new IllegalArgumentException("El monto debe ser positivo");
         }
 
+        if (monto > origen.getSaldo()) {
+            throw new IllegalArgumentException("Saldo insuficiente en la cuenta origen para transferir.");
+        }
+
         origen.restarSaldo(monto);
         destino.sumarSaldo(monto);
 
         origen.registrarMovimiento(
                 TipoMovimiento.TRANSFERENCIA_ENVIADA,
                 monto,
-                "Transferencia a cuenta " + destino.getNumero()
+                "Transferencia a cuenta cuyo email es " + destino.getEmail()
         );
 
         destino.registrarMovimiento(
                 TipoMovimiento.TRANSFERENCIA_RECIBIDA,
                 monto,
-                "Transferencia desde cuenta " + origen.getNumero()
+                "Transferencia desde cuenta cuyo mail es " + origen.getEmail()
         );
     }
 }

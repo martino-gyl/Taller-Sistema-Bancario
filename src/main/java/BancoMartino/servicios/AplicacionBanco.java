@@ -70,7 +70,6 @@ public class AplicacionBanco {
 
     public void crearCuenta(
             Admin admin,
-            String numeroCuenta,
             String passwordCuenta,
             TipoCuenta tipo,
             String dni,
@@ -79,8 +78,7 @@ public class AplicacionBanco {
             String email,
             String direccion
     ) {
-        admin.darAltaCuenta(
-                numeroCuenta,
+        admin.darAltaCuenta(banco,
                 passwordCuenta,
                 tipo,
                 dni,
@@ -107,8 +105,8 @@ public class AplicacionBanco {
         cuenta.extraer(monto);
     }
 
-    public Cuenta buscarCuenta(String numeroCuenta) {
-        Cuenta cuenta = banco.buscarCuentaPorNumero(numeroCuenta);
+    public Cuenta buscarCuenta(String cbu) {
+        Cuenta cuenta = banco.buscarCuentaPorCbu(cbu);
 
         if (cuenta == null) {
             throw new IllegalArgumentException("Cuenta inexistente.");
@@ -119,7 +117,7 @@ public class AplicacionBanco {
 
     public String resumenCuenta(Cuenta cuenta) {
         return "=== BALANCE CUENTA ===\n" +
-                "Número: " + cuenta.getNumero() + "\n" +
+                "CBU: " + cuenta.getCbu() + "\n" +
                 "Tipo: " + cuenta.getTipo() + "\n" +
                 "Titular: " + cuenta.getNombreCompleto() + "\n" +
                 "DNI: " + cuenta.getDni() + "\n" +
@@ -129,8 +127,8 @@ public class AplicacionBanco {
                 "Sucursal: " + cuenta.getSucursal().getNombre();
     }
 
-    public String resumenCuenta(String numeroCuenta) {
-        return resumenCuenta(buscarCuenta(numeroCuenta));
+    public String resumenCuenta(String cbu) {
+        return resumenCuenta(buscarCuenta(cbu));
     }
 
     public String movimientosCuenta(String numeroCuenta) {
