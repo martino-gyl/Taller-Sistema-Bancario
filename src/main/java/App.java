@@ -13,14 +13,34 @@ import BancoMatias.service.SucursalService;
 import BancoMatias.service.TransaccionService;
 import BancoMatias.service.UsuarioClienteService;
 
+import java.util.Scanner;
 
 public class App {
     public static void main(String[] args) {
         MenuBancario menuMartino = new MenuBancario(initBancoMartino());
         Menu menuMatias = initBancoMatias();
-        menuMartino.iniciar();
 
-        menuMatias.mostrarMenu();
+        Scanner sc = new Scanner(System.in);
+        boolean salir = false;
+
+        while (!salir) {
+            System.out.println("""
+                === RED LINK / BANELCO ===
+                1) Entrar a Banco Martino
+                2) Entrar a Banco Matias
+                0) Apagar Sistema
+                """);
+
+            int opcion = sc.nextInt();
+
+            switch (opcion) {
+                case 1 -> menuMartino.iniciar(); // Entra al bucle de Martino
+                case 2 -> menuMatias.mostrarMenu(); // Entra al bucle de Matias
+                case 0 -> salir = true;
+                default -> System.out.println("Opción no válida.");
+            }
+            // Al salir de cualquier menú con "Volver", regresamos a este switch
+        }
     }
 
     private static Menu initBancoMatias(){
