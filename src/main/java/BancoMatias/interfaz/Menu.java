@@ -256,15 +256,46 @@ public class Menu {
 
     }
 
-    private void menuAdmin(){
+    private void menuAdmin() {
         System.out.println("""
-                    Ingrese el número que corresponda con la acción que desee realizar:
-                    1) Generar balance de esta sucursal
-                    2) Dar de alta una cuenta
-                    3) Dar de baja una cuenta
-                    3) Cerrar sesion.
-                    4) Salir de la sucursal.
-                     ""\");""");}
+            --- MODO ADMINISTRADOR: ---
+            Ingrese el número que corresponda con la acción que desee realizar:
+            1) Generar balance de esta sucursal
+            2) Dar de alta una cuenta
+            3) Dar de baja una cuenta
+            4) Listar Usuarios de esta sucursal
+            5) Cerrar sesión
+            6) Salir de la sucursal
+            """);
+
+        int op = teclado.nextInt();
+        teclado.nextLine(); // Limpiar el buffer
+
+        switch (op) {
+            case 1 -> {}
+            case 2 -> registrarUsuario();
+            case 3 -> darDeBajaCuenta();   // El método que gestiona la eliminación
+            case 4 -> {
+                System.out.println("--- LISTADO DE USUARIOS ACTUALE ---");
+                sucursalActual.getUsuariosActivos().forEach(u ->
+                        System.out.println("- " + u.getName() + " [CBU: " + u.getCbu() + "]")
+                );
+            }
+            case 5 -> {
+                sesionActiva = null;
+                System.out.println("Sesión de administrador cerrada.");
+            }
+            case 6 -> {
+                sesionActiva = null;
+                sucursalActual = null;
+                System.out.println("Saliendo de la sucursal...");
+            }
+            default -> System.out.println("⚠️ Opción no válida, intente de nuevo.");
+        }
+    }
+
+    private void darDeBajaCuenta() {
+    }
 }
 
 

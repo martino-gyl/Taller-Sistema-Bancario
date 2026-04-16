@@ -34,7 +34,7 @@ public class Cuenta {
             String direccion
     ) {
         this.numero = numero;
-        this.cbu = CbuService.generarCbu()
+       // this.cbu = CbuService.generarCbu();
         this.password = password;
         this.sucursal = sucursal;
         this.tipo = tipo;

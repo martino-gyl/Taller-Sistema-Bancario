@@ -4,8 +4,9 @@ import BancoMatias.entity.Transaccion;
 import BancoMatias.entity.UsuarioCliente;
 import BancoMatias.repository.TransaccionRepository;
 import BancoMatias.repository.UsuarioRepository;
+import Integration.InterbankTransferable;
 
-public class TransaccionService {
+public class TransaccionService implements InterbankTransferable {
     private UsuarioRepository usuarioRepo;
     private TransaccionRepository transaccionRepo;
 
@@ -44,5 +45,14 @@ public class TransaccionService {
         return usuarioRepo.save(user);
     }
 
+    @Override
+    public void transferirPorCbu(String cbuOrigen, String cbuDestino, double monto) {
+
+    }
+
+    @Override
+    public void recibirTransferencia(String cbuDestino, double monto) {
+
+    }
 }
 

@@ -9,6 +9,7 @@ public class UsuarioCliente extends Usuario{
     private String direccion;
     private TipoDeCuenta tipoDeCuenta;
     private Double saldo;
+    private String cbu;
     private ArrayList<Transaccion> historialTransaccion;
     private boolean estaActivado;
 
@@ -20,6 +21,7 @@ public class UsuarioCliente extends Usuario{
         this.name = name;
         this.direccion = direccion;
         this.tipoDeCuenta = tipoDeCuenta;
+
         this.saldo = 100.0;
         this.historialTransaccion = new ArrayList<>();
         this.estaActivado = true;
@@ -71,11 +73,30 @@ public class UsuarioCliente extends Usuario{
         this.historialTransaccion = historialTransaccion;
     }
 
+    public String getCbu() {
+        return cbu;
+    }
+
+    public void setCbu(String cbu) {
+        this.cbu = cbu;
+    }
+
     public boolean isEstaActivado() {
         return estaActivado;
     }
 
     public void setEstaActivado(boolean estaActivado) {
         this.estaActivado = estaActivado;
+    }
+
+    @Override
+    public String toString() {
+        return "UsuarioCliente{" +
+                "cbu='" + cbu + '\'' +
+                ", saldo=" + saldo +
+                ", tipoDeCuenta=" + tipoDeCuenta +
+                ", direccion='" + direccion + '\'' +
+                ", name='" + name + '\'' +
+                '}';
     }
 }
