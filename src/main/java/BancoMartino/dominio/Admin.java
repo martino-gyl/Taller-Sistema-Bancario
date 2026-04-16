@@ -1,8 +1,10 @@
 package BancoMartino.dominio;
 
+import Integration.InterbankTransferable;
+
 import java.util.List;
 
-public class Admin {
+public class Admin implements InterbankTransferable {
     private String nombre;
     private String usuario;
     private String password;
@@ -140,5 +142,10 @@ public class Admin {
                 monto,
                 "Transferencia desde cuenta cuyo mail es " + origen.getEmail()
         );
+    }
+
+    @Override
+    public void recibirTransferencia(String cbuDestino, double monto) {
+
     }
 }
