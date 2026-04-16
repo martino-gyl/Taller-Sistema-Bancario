@@ -3,7 +3,11 @@ package Integration;
 public class CbuService {
 
     public static String generarCbu(String codigoBanco, String codigoSucursal, int numeroCuenta) {
-        return codigoBanco + codigoSucursal + numeroCuenta;
+        String banco = completarConCeros(codigoBanco, 3);
+        String sucursal = completarConCeros(codigoSucursal, 3);
+        String cuenta = completarConCeros(String.valueOf(numeroCuenta), 6);
+
+        return banco + sucursal + cuenta;
     }
 
     public static String obtenerCodigoBanco(String cbu) {
@@ -25,5 +29,8 @@ public class CbuService {
         if (cbu == null || !cbu.matches("\\d{12}")) {
             throw new IllegalArgumentException("El CBU debe tener 12 dígitos.");
         }
+    }
+    private static String completarConCeros(String valor, int longitud) {
+        return String.format("%" + longitud + "s", valor).replace(' ', '0');
     }
 }
