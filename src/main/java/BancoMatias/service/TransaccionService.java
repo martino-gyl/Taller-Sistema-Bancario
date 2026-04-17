@@ -5,12 +5,12 @@ import BancoMatias.entity.UsuarioCliente;
 import BancoMatias.repository.TransaccionRepository;
 import BancoMatias.repository.UsuarioRepository;
 import Integration.CbuService;
-import Integration.BankIntegrable;
+import Integration.TransactionService;
 import Integration.Mediator;
 
 import static BancoMatias.entity.Banco.CODIGO_BANCO_MATIAS;
 
-public class TransaccionService implements BankIntegrable {
+public class TransaccionService implements TransactionService {
     private UsuarioRepository usuarioRepo;
     private TransaccionRepository transaccionRepo;
     private Mediator mediador;
