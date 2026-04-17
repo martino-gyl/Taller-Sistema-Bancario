@@ -4,19 +4,17 @@ import java.util.Dictionary;
 import java.util.List;
 
 public class Mediator {
-    private Dictionary<String, TransactionServiceImpl> transactionServices;
+    private List<TransactionServiceImpl> bancos;
 
-    public Mediator(Dictionary<String, TransactionServiceImpl> transactionServices) {
-        this.transactionServices = transactionServices;
+
+    public Mediator(List<TransactionServiceImpl> bancos) {
+        this.bancos = bancos;
     }
 
     public ResultadoTransferencia transferir(String cbuOrigen, String cbuDestino, double monto) {
 
-        String codigoBancarioOrigen = CbuService.obtenerCodigoBanco(cbuOrigen);
-        String codigoBancarioDestino = CbuService.obtenerCodigoBanco(cbuDestino);
-
-        TransactionServiceImpl transactionServiceOrigen = transactionServices.get(codigoBancarioOrigen);
-        TransactionServiceImpl transactionServiceDestino = transactionServices.get(codigoBancarioDestino);
+        TransactionServiceImpl transactionServiceOrigen = buscarBanco(cbuOrigen);
+        TransactionServiceImpl transactionServiceDestino = buscarBanco(cbuDestino);
 
         if (transactionServiceOrigen == null || transactionServiceDestino == null) {
             throw new IllegalArgumentException("TransactionService no está iniciado");
@@ -33,6 +31,13 @@ public class Mediator {
         transactionServiceDestino.depositarPorCbu(cbuDestino, monto);
 
         return resultadoDestino;
+    }
+
+    private TransactionServiceImpl buscarBanco(String cbu) {
+        return bancos.stream()
+                .filter(b -> b.esMiCbu(cbu))
+                .findFirst()
+                .orElse(null);
     }
 
 }

@@ -12,8 +12,8 @@ import BancoMatias.repository.UsuarioRepository;
 import BancoMatias.service.SucursalService;
 import BancoMatias.service.TransaccionService;
 import BancoMatias.service.UsuarioClienteService;
-import Integration.TransactionService;
 import Integration.Mediator;
+import Integration.TransactionServiceImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +29,7 @@ public class App {
         UsuarioClienteService userServiceMatias = new UsuarioClienteService(userRepo);
         SucursalService sucServiceMatias = new SucursalService(sucRepo);
 
-        List<TransactionService> listaBancos = new ArrayList<>();
+        List<TransactionServiceImpl> listaBancos = new ArrayList<>();
         listaBancos.add(transServiceMatias);
         //listaBancos.add(serviceMartino);
 
