@@ -6,5 +6,6 @@ public interface TransactionServiceImpl {
     void depositarPorCbu(String cbuOrigen, double monto);
     void extraerPorCbu(String cbuDestino, double monto);
     boolean existeCuenta(String cbu);
+    boolean esMiCbu(String cbu);
     String getCodigoBanco();
 }

@@ -1,10 +1,11 @@
 package BancoMartino.dominio;
 
-import Integration.InterbankTransferable;
+import Integration.ResultadoTransferencia;
+import Integration.TransactionServiceImpl;
 
 import java.util.List;
 
-public class Admin implements InterbankTransferable {
+public class Admin implements TransactionServiceImpl {
     private String nombre;
     private String usuario;
     private String password;
@@ -144,8 +145,40 @@ public class Admin implements InterbankTransferable {
         );
     }
 
-    @Override
-    public void recibirTransferencia(String cbuDestino, double monto) {
 
+
+    @Override
+    public ResultadoTransferencia iniciarTransferencia(String cbuOrigen, String cbuDestino, double monto) {
+        return null;
+    }
+
+    @Override
+    public ResultadoTransferencia recibirTransferencia(String cbuOrigen, String cbuDestino, double monto) {
+        return null;
+    }
+
+    @Override
+    public void depositarPorCbu(String cbuOrigen, double monto) {
+
+    }
+
+    @Override
+    public void extraerPorCbu(String cbuDestino, double monto) {
+
+    }
+
+    @Override
+    public boolean existeCuenta(String cbu) {
+        return false;
+    }
+
+    @Override
+    public boolean esMiCbu(String cbu) {
+        return false;
+    }
+
+    @Override
+    public String getCodigoBanco() {
+        return "";
     }
 }
