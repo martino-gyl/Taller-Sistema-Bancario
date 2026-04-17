@@ -10,6 +10,7 @@ public class Banco {
     private List<Sucursal> sucursales;
     private String codigoBanco;
     private CbuService cbuService;
+    public final String CODIGO_BANCO_MARTINO = "102";
 
     public Banco(String nombre, String codigoBanco) {
         this.nombre = nombre;
