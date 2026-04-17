@@ -5,12 +5,13 @@ import BancoMatias.entity.UsuarioCliente;
 import BancoMatias.repository.TransaccionRepository;
 import BancoMatias.repository.UsuarioRepository;
 import Integration.CbuService;
-import Integration.BankIntegrable;
+import Integration.ResultadoTransferencia;
+import Integration.TransactionServiceImpl;
 import Integration.Mediator;
 
 import static BancoMatias.entity.Banco.CODIGO_BANCO_MATIAS;
 
-public class TransaccionService implements BankIntegrable {
+public class TransaccionService implements TransactionServiceImpl {
     private UsuarioRepository usuarioRepo;
     private TransaccionRepository transaccionRepo;
     private Mediator mediador;
@@ -77,6 +78,31 @@ public class TransaccionService implements BankIntegrable {
             // ¡Acá es donde usás el Mediador!
             mediador.transferir(cbuOrigen, cbuDestino, monto);
         }
+    }
+
+    @Override
+    public ResultadoTransferencia recibirTransferencia(String cbuOrigen, String cbuDestino, double monto) {
+        return null;
+    }
+
+    @Override
+    public void debitarCuenta(String cbuOrigen, double monto) {
+
+    }
+
+    @Override
+    public void acreditarCuenta(String cbuDestino, double monto) {
+
+    }
+
+    @Override
+    public boolean existeCuenta(String cbu) {
+        return false;
+    }
+
+    @Override
+    public String getCodigoBanco() {
+        return "";
     }
 
     @Override
