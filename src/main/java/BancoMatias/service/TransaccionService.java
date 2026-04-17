@@ -23,25 +23,6 @@ public class TransaccionService implements TransactionServiceImpl {
         this.transaccionRepo = transaccionRepo;
     }
 
-    public boolean transferir(UsuarioCliente emisor, UsuarioCliente destinatario, Double monto) {
-            Transaccion transaccionPendiente = new Transaccion(emisor, destinatario, monto);
-            if (verificarSaldoParaRealizarTransaccionExitosa(emisor, monto)) {
-                emisor.restarSaldo(monto);
-                destinatario.sumarSaldo(monto);
-                usuarioRepo.agregarTransaccion(emisor, transaccionPendiente);
-                usuarioRepo.agregarTransaccion(destinatario, transaccionPendiente);
-
-                return  true;
-                   } else {
-                return false;
-            }
-
-        }
-
-
-    public boolean verificarSaldoParaRealizarTransaccionExitosa (UsuarioCliente emisor, double monto){
-        return monto > 0 && emisor.getSaldo() >= monto;
-    }
     public boolean depositar(UsuarioCliente user, Double monto) {
         if (user == null || monto == null || monto <= 0) {
             return false;
@@ -119,24 +100,6 @@ public class TransaccionService implements TransactionServiceImpl {
     public void setMediador(Mediator mediador) {
         this.mediador = mediador;
     }
-//        public void transferir(UsuarioCliente cuentaOrigen, UsuarioCliente cuentaDestino, Double monto) throws SaldoInsuficienteException {
-//
-//            // Si la validación falla, lanzamos la excepción y el método se corta acá
-//            if (!verificarSaldoParaRealizarTransaccionExitosa(cuentaOrigen, monto)) {
-//                throw new SaldoInsuficienteException("Error: El saldo actual ($" + cuentaOrigen.getSaldo() + ") es insuficiente para transferir $" + monto);
-//            }
-//
-//            // Si llegamos acá, es porque había saldo
-//            Transaccion transaccionPendiente = new Transaccion(cuentaOrigen, cuentaDestino, monto);
-//
-//            cuentaOrigen.restarSaldo(monto);
-//            cuentaDestino.sumarSaldo(monto);
-//
-//            usuarioRepo.agregarTransaccion(cuentaOrigen, transaccionPendiente);
-//            usuarioRepo.agregarTransaccion(cuentaDestino, transaccionPendiente);
-//        }
-
-
 
 }
 

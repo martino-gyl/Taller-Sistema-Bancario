@@ -2,6 +2,7 @@ package BancoMartino.servicios.paneles;
 
 import BancoMartino.dominio.Cuenta;
 import BancoMartino.servicios.AplicacionBanco;
+import Integration.ResultadoTransferencia;
 
 import java.util.Scanner;
 
@@ -69,5 +70,21 @@ public class PanelCuenta extends Panel {
 
         getAplicacion().extraer(cuenta, monto);
         System.out.println("Extracción realizada.");
+    }
+
+    private void transferir(Cuenta cuenta) {
+        System.out.print("CBU destino: ");
+        String cbuDestino = leerTexto();
+
+        System.out.print("Monto a transferir: ");
+        double monto = leerDouble();
+
+        ResultadoTransferencia resultado = getAplicacion().transferir(cbuDestino, cbuDestino, monto);
+        if(resultado.fueExistoso){
+            System.out.println("Transferencia realizada correctamente.");
+        } else {
+            System.out.println("La transferencia no se pudo concretar, tuvo un error: " + resultado.mensaje);
+        }
+
     }
 }
