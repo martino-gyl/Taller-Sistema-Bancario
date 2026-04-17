@@ -5,13 +5,17 @@ import BancoMatias.entity.UsuarioCliente;
 import BancoMatias.repository.TransaccionRepository;
 import BancoMatias.repository.UsuarioRepository;
 import Integration.CbuService;
-import Integration.InterbankTransferable;
+import Integration.BankIntegrable;
+import Integration.Mediator;
 
 import static BancoMatias.entity.Banco.CODIGO_BANCO_MATIAS;
 
-public class TransaccionService implements InterbankTransferable {
+public class TransaccionService implements BankIntegrable {
     private UsuarioRepository usuarioRepo;
     private TransaccionRepository transaccionRepo;
+    private Mediator mediador;
+
+
 
     public TransaccionService(UsuarioRepository usuarioRepo, TransaccionRepository transaccionRepo){
         this.usuarioRepo = usuarioRepo;
@@ -79,7 +83,13 @@ public class TransaccionService implements InterbankTransferable {
         return CbuService.obtenerCodigoBanco(cbu).equals(CODIGO_BANCO_MATIAS);
     }
 
+    public Mediator getMediador() {
+        return mediador;
+    }
 
+    public void setMediador(Mediator mediador) {
+        this.mediador = mediador;
+    }
 //        public void transferir(UsuarioCliente cuentaOrigen, UsuarioCliente cuentaDestino, Double monto) throws SaldoInsuficienteException {
 //
 //            // Si la validación falla, lanzamos la excepción y el método se corta acá
