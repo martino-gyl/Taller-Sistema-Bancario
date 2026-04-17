@@ -4,32 +4,35 @@ import java.util.Dictionary;
 import java.util.List;
 
 public class Mediator {
-    private Dictionary<TransactionService> bancos;
+    private Dictionary<String, TransactionServiceImpl> transactionServices;
 
-
-    public Mediator(List<TransactionService> bancos) {
-        this.bancos = bancos;
+    public Mediator(Dictionary<String, TransactionServiceImpl> transactionServices) {
+        this.transactionServices = transactionServices;
     }
 
-    public void transferir(String cbuOrigen, String cbuDestino, double monto) {
+    public ResultadoTransferencia transferir(String cbuOrigen, String cbuDestino, double monto) {
 
-        TransactionService bancoOrigen = buscarBanco(cbuOrigen);
-        TransactionService bancoDestino = buscarBanco(cbuDestino);
+        String codigoBancarioOrigen = CbuService.obtenerCodigoBanco(cbuOrigen);
+        String codigoBancarioDestino = CbuService.obtenerCodigoBanco(cbuDestino);
 
-        if (bancoOrigen == null || bancoDestino == null) {
-            return;
+        TransactionServiceImpl transactionServiceOrigen = transactionServices.get(codigoBancarioOrigen);
+        TransactionServiceImpl transactionServiceDestino = transactionServices.get(codigoBancarioDestino);
+
+        if (transactionServiceOrigen == null || transactionServiceDestino == null) {
+            throw new IllegalArgumentException("TransactionService no está iniciado");
         }
 
-        bancoOrigen.extraerPorCbu(cbuOrigen, monto);
-        bancoDestino.depositarPorCbu(cbuDestino, monto);
+        ResultadoTransferencia resultadoDestino =
+                transactionServiceDestino.recibirTransferencia(cbuOrigen,cbuDestino,monto);
 
-        System.out.println("✅ Transferencia procesada: " + cbuOrigen + " -> " + cbuDestino);
+        if (!resultadoDestino.fueExistoso) {
+            return resultadoDestino;
+        }
+
+        transactionServiceOrigen.extraerPorCbu(cbuOrigen, monto);
+        transactionServiceDestino.depositarPorCbu(cbuDestino, monto);
+
+        return resultadoDestino;
     }
 
-    private TransactionService buscarBanco(String cbu) {
-        return bancos.stream()
-                .filter(b -> b.esMiCbu(cbu))
-                .findFirst()
-                .orElse(null);
-    }
 }
