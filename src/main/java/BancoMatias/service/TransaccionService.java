@@ -66,6 +66,19 @@ public class TransaccionService implements BankIntegrable {
 
     }
 
+    public void iniciarTransferencia(String cbuOrigen, String cbuDestino, double monto) {
+        // ¿El destino es de mi propio banco?
+        if (this.esMiCbu(cbuDestino)) {
+            System.out.println("Log: Transferencia interna detectada.");
+            // Lógica interna: buscás ambos en tu repo y restás/sumás
+            this.transferirPorCbu(cbuOrigen, cbuDestino, monto);
+        } else {
+            System.out.println("Log: Transferencia externa. Llamando al Mediador...");
+            // ¡Acá es donde usás el Mediador!
+            mediador.transferir(cbuOrigen, cbuDestino, monto);
+        }
+    }
+
     @Override
     public void depositarPorCbu(String cbuDestino, double monto) {
         UsuarioCliente cuentaDestino = usuarioRepo.buscarUsuarioClientePorCbu(cbuDestino);

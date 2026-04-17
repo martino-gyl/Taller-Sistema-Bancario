@@ -5,6 +5,7 @@ import java.util.List;
 public class Mediator {
     private List<BankIntegrable> bancos;
 
+
     public Mediator(List<BankIntegrable> bancos) {
         this.bancos = bancos;
     }
