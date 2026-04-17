@@ -1,15 +1,21 @@
 package BancoMartino.dominio;
 
+import Integration.CbuService;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class Banco {
     private String nombre;
     private List<Sucursal> sucursales;
+    private String codigoBanco;
+    private CbuService cbuService;
 
-    public Banco(String nombre) {
+    public Banco(String nombre, String codigoBanco) {
         this.nombre = nombre;
+        this.codigoBanco = codigoBanco;
         this.sucursales = new ArrayList<>();
+        this.cbuService = new CbuService();
     }
 
     public String getNombre() {
@@ -18,6 +24,18 @@ public class Banco {
 
     public List<Sucursal> getSucursales() {
         return sucursales;
+    }
+
+    public String getCodigoBanco() {
+        return codigoBanco;
+    }
+
+    public String generarCbu(Sucursal sucursal) {
+        return cbuService.generarCbu(
+                codigoBanco,
+                sucursal.getCodigo(),
+                sucursal.siguienteNumeroCuenta()
+        );
     }
 
     public void agregarSucursal(Sucursal sucursal) {
@@ -54,9 +72,9 @@ public class Banco {
         return total;
     }
 
-    public Cuenta buscarCuentaPorNumero(String numero) {
+    public Cuenta buscarCuentaPorCbu(String cbu) {
         for (Sucursal sucursal : sucursales) {
-            Cuenta cuenta = sucursal.buscarCuentaPorNumero(numero);
+            Cuenta cuenta = sucursal.buscarCuentaPorCbu(cbu);
             if (cuenta != null) {
                 return cuenta;
             }
@@ -64,12 +82,19 @@ public class Banco {
         return null;
     }
 
-    public Cuenta obtenerCuentaPorId(String idCuenta) {
-        return buscarCuentaPorNumero(idCuenta);
+    public Cuenta buscarCuentaPorEmail(String email) {
+        for (Sucursal sucursal : sucursales) {
+            for (Cuenta cuenta : sucursal.getCuentas()) {
+                if (cuenta.getEmail().equalsIgnoreCase(email)) {
+                    return cuenta;
+                }
+            }
+        }
+        return null;
     }
 
-    public Cuenta autenticarCuenta(String numero, String password) {
-        Cuenta cuenta = buscarCuentaPorNumero(numero);
+    public Cuenta autenticarCuenta(String email, String password) {
+        Cuenta cuenta = buscarCuentaPorEmail(email);
 
         if (cuenta != null && cuenta.validarPassword(password)) {
             return cuenta;

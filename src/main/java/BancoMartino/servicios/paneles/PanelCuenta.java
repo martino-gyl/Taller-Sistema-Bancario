@@ -18,7 +18,7 @@ public class PanelCuenta extends Panel {
 
         while (!volver) {
             try {
-                System.out.println("\n--- PANEL CUENTA " + cuenta.getNumero() + " ---");
+                System.out.println("\n--- PANEL CUENTA " + cuenta.getEmail() + " ---");
                 System.out.println("1. Depositar");
                 System.out.println("2. Extraer");
                 System.out.println("3. Ver saldo");
@@ -34,7 +34,7 @@ public class PanelCuenta extends Panel {
                     case 2 -> extraer(cuenta);
                     case 3 -> System.out.println("Saldo actual: $" + cuenta.getSaldo());
                     case 4 -> System.out.println("\n" + getAplicacion().resumenCuenta(cuenta));
-                    case 5 -> System.out.println("\n" + getAplicacion().movimientosCuenta(cuenta.getNumero()));
+                    case 5 -> System.out.println("\n" + getAplicacion().movimientosCuenta(cuenta.getCbu()));
                     case 6 -> volver = true;
                     default -> System.out.println("Opción inválida.");
                 }
@@ -46,13 +46,13 @@ public class PanelCuenta extends Panel {
 
     private Cuenta loginCuenta() {
         System.out.println("\n--- LOGIN CUENTA ---");
-        System.out.print("Número de cuenta: ");
-        String numeroCuenta = leerTexto();
+        System.out.print("Email: ");
+        String email = leerTexto();
 
         System.out.print("Contraseña: ");
         String password = leerTexto();
 
-        return getAplicacion().loginCuenta(numeroCuenta, password);
+        return getAplicacion().loginCuenta(email, password);
     }
 
     private void depositar(Cuenta cuenta) {
