@@ -4,7 +4,10 @@ import BancoMatias.entity.Transaccion;
 import BancoMatias.entity.UsuarioCliente;
 import BancoMatias.repository.TransaccionRepository;
 import BancoMatias.repository.UsuarioRepository;
+import Integration.CbuService;
 import Integration.InterbankTransferable;
+
+import static BancoMatias.entity.Banco.CODIGO_BANCO_MATIAS;
 
 public class TransaccionService implements InterbankTransferable {
     private UsuarioRepository usuarioRepo;
@@ -47,12 +50,54 @@ public class TransaccionService implements InterbankTransferable {
 
     @Override
     public void transferirPorCbu(String cbuOrigen, String cbuDestino, double monto) {
+        UsuarioCliente cuentaOrigen = usuarioRepo.buscarUsuarioClientePorCbu(cbuOrigen);
+        UsuarioCliente cuentaDestino = usuarioRepo.buscarUsuarioClientePorCbu(cbuDestino);
+        Transaccion transaccionPendiente = new Transaccion(cuentaOrigen, cuentaDestino, monto);
+
+
+            cuentaOrigen.restarSaldo(monto);
+            cuentaDestino.sumarSaldo(monto);
+            usuarioRepo.agregarTransaccion(cuentaOrigen, transaccionPendiente);
+            usuarioRepo.agregarTransaccion(cuentaDestino, transaccionPendiente);
 
     }
 
     @Override
-    public void recibirTransferencia(String cbuDestino, double monto) {
-
+    public void depositarPorCbu(String cbuDestino, double monto) {
+        UsuarioCliente cuentaDestino = usuarioRepo.buscarUsuarioClientePorCbu(cbuDestino);
+        cuentaDestino.sumarSaldo(monto);
     }
+
+    @Override
+    public void extraerPorCbu(String cbuOrigen, double monto) {
+        UsuarioCliente cuentaOrigen = usuarioRepo.buscarUsuarioClientePorCbu(cbuOrigen);
+        cuentaOrigen.restarSaldo(monto);
+    }
+
+    @Override
+    public boolean esMiCbu(String cbu) {
+        return CbuService.obtenerCodigoBanco(cbu).equals(CODIGO_BANCO_MATIAS);
+    }
+
+
+//        public void transferir(UsuarioCliente cuentaOrigen, UsuarioCliente cuentaDestino, Double monto) throws SaldoInsuficienteException {
+//
+//            // Si la validación falla, lanzamos la excepción y el método se corta acá
+//            if (!verificarSaldoParaRealizarTransaccionExitosa(cuentaOrigen, monto)) {
+//                throw new SaldoInsuficienteException("Error: El saldo actual ($" + cuentaOrigen.getSaldo() + ") es insuficiente para transferir $" + monto);
+//            }
+//
+//            // Si llegamos acá, es porque había saldo
+//            Transaccion transaccionPendiente = new Transaccion(cuentaOrigen, cuentaDestino, monto);
+//
+//            cuentaOrigen.restarSaldo(monto);
+//            cuentaDestino.sumarSaldo(monto);
+//
+//            usuarioRepo.agregarTransaccion(cuentaOrigen, transaccionPendiente);
+//            usuarioRepo.agregarTransaccion(cuentaDestino, transaccionPendiente);
+//        }
+
+
+
 }
 
