@@ -67,32 +67,22 @@ public class TransaccionService implements TransactionServiceImpl {
 
     }
 
-    public void iniciarTransferencia(String cbuOrigen, String cbuDestino, double monto) {
-        // ¿El destino es de mi propio banco?
-        if (this.esMiCbu(cbuDestino)) {
-            System.out.println("Log: Transferencia interna detectada.");
-            // Lógica interna: buscás ambos en tu repo y restás/sumás
-            this.transferirPorCbu(cbuOrigen, cbuDestino, monto);
-        } else {
-            System.out.println("Log: Transferencia externa. Llamando al Mediador...");
-            // ¡Acá es donde usás el Mediador!
-            mediador.transferir(cbuOrigen, cbuDestino, monto);
-        }
+    public ResultadoTransferencia iniciarTransferencia(String cbuOrigen, String cbuDestino, double monto) {
+
+        ResultadoTransferencia resultadoValidacionOrigen = validarMonto(monto);
+            retur resultado;
+        validarCuentaOrigen(cbuOrigen);
+        valirSaldo(cbuOrigen,monto);
+
+        return mediador.transferir(cbuOrigen, cbuDestino, monto);
     }
 
     @Override
     public ResultadoTransferencia recibirTransferencia(String cbuOrigen, String cbuDestino, double monto) {
-        return null;
-    }
+        validarMonto(monto);
+        valirSaldo(cbuDestino,monto);
 
-    @Override
-    public void debitarCuenta(String cbuOrigen, double monto) {
-
-    }
-
-    @Override
-    public void acreditarCuenta(String cbuDestino, double monto) {
-
+        return mediador.transferir(cbuOrigen, cbuDestino, monto);
     }
 
     @Override
