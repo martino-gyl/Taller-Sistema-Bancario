@@ -217,28 +217,46 @@ public class Menu {
     private void solicitarBaja() {
     }
 
+//    private void procesarTransferencia() {
+//        System.out.println("Para hacer una transferencia escriba el mail del usuario al que desea transferir");
+//        System.out.println("Mail: ");
+//        String mail = teclado.nextLine().toLowerCase();
+//        System.out.println("Ingrese el monto que desea transferir: ");
+//        double montoATransferir = teclado.nextDouble();
+//        UsuarioCliente emisor = userService.buscarUsuarioClientePorMail(sesionActiva.getMail());
+//        UsuarioCliente destinatario = userService.buscarUsuarioClientePorMail(mail);
+//       if(destinatario != null){
+//           if(transService.transferir(emisor, destinatario, montoATransferir)){
+//               System.out.println("El usuario " + emisor.getName() + " transfirio $" + montoATransferir + " al usuario " + destinatario.getName());
+//               System.out.println("-----------------------------");
+//           }else{
+//               System.out.println("La Transaccion de " + emisor.getName() +"a " + destinatario.getName() + " fallo por saldo insuficiente");
+//               System.out.println("-----------------------------");
+//           }
+//
+//       } else{
+//           System.out.println("No se encuentra al destinatario");
+//           System.out.println("-----------------------------");
+//       }
+//
+//    }
+
     private void procesarTransferencia() {
-        System.out.println("Para hacer una transferencia escriba el mail del usuario al que desea transferir");
-        System.out.println("Mail: ");
-        String mail = teclado.nextLine().toLowerCase();
-        System.out.println("Ingrese el monto que desea transferir: ");
-        double montoATransferir = teclado.nextDouble();
-        UsuarioCliente emisor = userService.buscarUsuarioClientePorMail(sesionActiva.getMail());
-        UsuarioCliente destinatario = userService.buscarUsuarioClientePorMail(mail);
-       if(destinatario != null){
-           if(transService.transferir(emisor, destinatario, montoATransferir)){
-               System.out.println("El usuario " + emisor.getName() + " transfirio $" + montoATransferir + " al usuario " + destinatario.getName());
-               System.out.println("-----------------------------");
-           }else{
-               System.out.println("La Transaccion de " + emisor.getName() +"a " + destinatario.getName() + " fallo por saldo insuficiente");
-               System.out.println("-----------------------------");
-           }
+        System.out.println("--- TRANSFERENCIA POR CBU ---");
 
-       } else{
-           System.out.println("No se encuentra al destinatario");
-           System.out.println("-----------------------------");
-       }
 
+        String cbuOrigen = ((UsuarioCliente) sesionActiva).getCbu();
+
+        System.out.println("Su CBU es: " + cbuOrigen);
+        System.out.print("Ingrese el CBU del destinatario: ");
+        String cbuDestino = teclado.nextLine(); // Leemos el CBU de 12 dígitos
+
+        System.out.print("Ingrese el monto a transferir: ");
+        double monto = teclado.nextDouble();
+        teclado.nextLine(); // Limpiar buffer
+
+
+        transService.iniciarTransferencia(cbuOrigen, cbuDestino, monto);
     }
 
     private void procesarRetiro() {
@@ -256,15 +274,46 @@ public class Menu {
 
     }
 
-    private void menuAdmin(){
+    private void menuAdmin() {
         System.out.println("""
-                    Ingrese el número que corresponda con la acción que desee realizar:
-                    1) Generar balance de esta sucursal
-                    2) Dar de alta una cuenta
-                    3) Dar de baja una cuenta
-                    3) Cerrar sesion.
-                    4) Salir de la sucursal.
-                     ""\");""");}
+            --- MODO ADMINISTRADOR: ---
+            Ingrese el número que corresponda con la acción que desee realizar:
+            1) Generar balance de esta sucursal
+            2) Dar de alta una cuenta
+            3) Dar de baja una cuenta
+            4) Listar Usuarios de esta sucursal
+            5) Cerrar sesión
+            6) Salir de la sucursal
+            """);
+
+        int op = teclado.nextInt();
+        teclado.nextLine(); // Limpiar el buffer
+
+        switch (op) {
+            case 1 -> {}
+            case 2 -> registrarUsuario();
+            case 3 -> darDeBajaCuenta();   // El método que gestiona la eliminación
+            case 4 -> {
+                System.out.println("--- LISTADO DE USUARIOS ACTUALE ---");
+                sucursalActual.getUsuariosActivos().forEach(u ->
+                        System.out.println("- " + u.getName() + " [CBU: " + u.getCbu() + "]")
+                );
+            }
+            case 5 -> {
+                sesionActiva = null;
+                System.out.println("Sesión de administrador cerrada.");
+            }
+            case 6 -> {
+                sesionActiva = null;
+                sucursalActual = null;
+                System.out.println("Saliendo de la sucursal...");
+            }
+            default -> System.out.println("⚠️ Opción no válida, intente de nuevo.");
+        }
+    }
+
+    private void darDeBajaCuenta() {
+    }
 }
 
 

@@ -12,13 +12,37 @@ import BancoMatias.repository.UsuarioRepository;
 import BancoMatias.service.SucursalService;
 import BancoMatias.service.TransaccionService;
 import BancoMatias.service.UsuarioClienteService;
+import Integration.BankIntegrable;
+import Integration.Mediator;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class App {
     public static void main(String[] args) {
+        UsuarioRepository userRepo = new UsuarioRepository();
+        TransaccionRepository transRepo = new TransaccionRepository();
+        SucursalRepository sucRepo = new SucursalRepository();
+
+        TransaccionService transServiceMatias = new TransaccionService(userRepo, transRepo);
+        UsuarioClienteService userServiceMatias = new UsuarioClienteService(userRepo);
+        SucursalService sucServiceMatias = new SucursalService(sucRepo);
+
+        List<BankIntegrable> listaBancos = new ArrayList<>();
+        listaBancos.add(transServiceMatias);
+        //listaBancos.add(serviceMartino);
+
+        Mediator mediador = new Mediator(listaBancos);
+
+        transServiceMatias.setMediador(mediador);
+        //serviceMartino.setMediador(mediador);
+
+        Menu menuMatias = new Menu(userServiceMatias, transServiceMatias, sucServiceMatias);
         MenuBancario menuMartino = new MenuBancario(initBancoMartino());
-        Menu menuMatias = initBancoMatias();
+
+       //  ejecutarMenuPrincipal(menuMatias, menuMartino);
+
 
         Scanner sc = new Scanner(System.in);
         boolean salir = false;
