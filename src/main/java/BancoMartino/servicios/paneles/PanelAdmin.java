@@ -28,8 +28,7 @@ public class PanelAdmin extends Panel {
                 System.out.println("4. Ver balance de la sucursal");
                 System.out.println("5. Ver balance de una cuenta");
                 System.out.println("6. Ver movimientos de una cuenta");
-                System.out.println("7. Transferir entre cuentas de la sucursal");
-                System.out.println("8. Volver");
+                System.out.println("7. Volver");
                 System.out.print("Opción: ");
 
                 int opcion = leerInt();
@@ -41,8 +40,7 @@ public class PanelAdmin extends Panel {
                     case 4 -> System.out.println("Balance sucursal: $" + getAplicacion().balanceSucursal(admin));
                     case 5 -> verBalanceCuenta();
                     case 6 -> verMovimientosCuenta();
-                    case 7 -> transferir(admin);
-                    case 8 -> volver = true;
+                    case 7 -> volver = true;
                     default -> System.out.println("Opción inválida.");
                 }
             } catch (IllegalArgumentException e) {
@@ -126,20 +124,6 @@ public class PanelAdmin extends Panel {
 
         getAplicacion().eliminarCuenta(admin, numeroCuenta);
         System.out.println("Cuenta eliminada correctamente.");
-    }
-
-    private void transferir(Admin admin) {
-        System.out.print("CBU origen: ");
-        String cbuOrigen = leerTexto();
-
-        System.out.print("CBU destino: ");
-        String cbuDestino = leerTexto();
-
-        System.out.print("Monto a transferir: ");
-        double monto = leerDouble();
-
-        getAplicacion().transferir(admin, cbuOrigen, cbuDestino, monto);
-        System.out.println("Transferencia realizada correctamente.");
     }
 
     private void verBalanceCuenta() {

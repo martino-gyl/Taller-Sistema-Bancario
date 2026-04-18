@@ -22,10 +22,11 @@ public class PanelCuenta extends Panel {
                 System.out.println("\n--- PANEL CUENTA " + cuenta.getEmail() + " ---");
                 System.out.println("1. Depositar");
                 System.out.println("2. Extraer");
-                System.out.println("3. Ver saldo");
-                System.out.println("4. Ver balance");
-                System.out.println("5. Ver movimientos");
-                System.out.println("6. Volver");
+                System.out.println("3. Transferir");
+                System.out.println("4. Ver saldo");
+                System.out.println("5. Ver balance");
+                System.out.println("6. Ver movimientos");
+                System.out.println("7. Volver");
                 System.out.print("Opción: ");
 
                 int opcion = leerInt();
@@ -33,10 +34,11 @@ public class PanelCuenta extends Panel {
                 switch (opcion) {
                     case 1 -> depositar(cuenta);
                     case 2 -> extraer(cuenta);
-                    case 3 -> System.out.println("Saldo actual: $" + cuenta.getSaldo());
-                    case 4 -> System.out.println("\n" + getAplicacion().resumenCuenta(cuenta));
-                    case 5 -> System.out.println("\n" + getAplicacion().movimientosCuenta(cuenta.getCbu()));
-                    case 6 -> volver = true;
+                    case 3 -> transferir();
+                    case 4 -> System.out.println("Saldo actual: $" + cuenta.getSaldo());
+                    case 5 -> System.out.println("\n" + getAplicacion().resumenCuenta(cuenta));
+                    case 6 -> System.out.println("\n" + getAplicacion().movimientosCuenta(cuenta.getCbu()));
+                    case 7 -> volver = true;
                     default -> System.out.println("Opción inválida.");
                 }
             } catch (IllegalArgumentException e) {
@@ -72,7 +74,7 @@ public class PanelCuenta extends Panel {
         System.out.println("Extracción realizada.");
     }
 
-    private void transferir(Cuenta cuenta) {
+    private void transferir() {
         System.out.print("CBU destino: ");
         String cbuDestino = leerTexto();
 

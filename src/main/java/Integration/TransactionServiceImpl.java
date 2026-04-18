@@ -7,9 +7,9 @@ public interface TransactionServiceImpl {
     void extraerPorCbu(String cbuDestino, double monto);
     boolean esMiCbu(String cbu);
     String getCodigoBanco();
-    public boolean validarCuenta(String cbuOrigen);
-    public boolean validarSaldo(String cbuOrigen, double monto);
-    public boolean validarMonto(double monto);
+    public boolean cuentaEsValida(String cbuOrigen);
+    public boolean saldoEsSuficiente(String cbuOrigen, double monto);
+    public boolean montoEsValido(double monto);
     public void cargarMovimientoDeTransferenciaEnviada(String cbuOrigen,String cbuDestino,double monto);
     public void cargarMovimientoDeTransferenciaRecibida(String cbuOrigen,String cbuDestino,double monto);
 }
