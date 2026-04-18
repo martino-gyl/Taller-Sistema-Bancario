@@ -1,6 +1,5 @@
 package BancoMatias.service;
 
-import BancoMatias.entity.Transaccion;
 import BancoMatias.entity.UsuarioCliente;
 import BancoMatias.repository.TransaccionRepository;
 import BancoMatias.repository.UsuarioRepository;
@@ -25,7 +24,7 @@ public class TransaccionService implements TransactionServiceImpl {
         UsuarioCliente cuentaOrigen = usuarioRepo.buscarUsuarioClientePorCbu(cbuOrigen);
         return  cuentaOrigen.getSaldo() >= monto;
     }
-    public boolean validarCuentaOrigen(String cbuOrigen){
+    public boolean validarCuenta(String cbuOrigen){
         return usuarioRepo.buscarUsuarioClientePorCbu(cbuOrigen) != null;
     }
     public boolean depositar(UsuarioCliente user, Double monto) {
@@ -43,16 +42,15 @@ public class TransaccionService implements TransactionServiceImpl {
         return monto>0;
     }
 
-//    public void transferirPorCbu(String cbuOrigen, String cbuDestino, double monto) {
-//        UsuarioCliente cuentaOrigen = usuarioRepo.buscarUsuarioClientePorCbu(cbuOrigen);
-//        UsuarioCliente cuentaDestino = usuarioRepo.buscarUsuarioClientePorCbu(cbuDestino);
-//        Transaccion transaccionPendiente = new Transaccion(cuentaOrigen, cuentaDestino, monto);
-//
-//            cuentaOrigen.restarSaldo(monto);
-//            cuentaDestino.sumarSaldo(monto);
-//            usuarioRepo.agregarTransaccion(cuentaOrigen, transaccionPendiente);
-//            usuarioRepo.agregarTransaccion(cuentaDestino, transaccionPendiente);
-//    }
+    @Override
+    public void cargarMovimientoDeTransferenciaEnviada(String cbuOrigen, String cbuDestino, double monto) {
+
+    }
+
+    @Override
+    public void cargarMovimientoDeTransferenciaRecibida(String cbuOrigen, String cbuDestino, double monto) {
+
+    }
 
     public ResultadoTransferencia iniciarTransferencia(String cbuOrigen, String cbuDestino, double monto) {
         ResultadoTransferencia resultado = new ResultadoTransferencia();
@@ -62,7 +60,7 @@ public class TransaccionService implements TransactionServiceImpl {
             resultado.mensaje = "El monto tiene que ser mayor a 0.";
             return resultado;}
 
-        resultado.fueExistoso = validarCuentaOrigen(cbuOrigen);
+        resultado.fueExistoso = validarCuenta(cbuOrigen);
         if (!resultado.fueExistoso) {
             resultado.mensaje = "El cbu esta mal escrito o el usuario no existe";
             return resultado;}
@@ -84,17 +82,12 @@ public class TransaccionService implements TransactionServiceImpl {
             resultado.mensaje = "El monto tiene que ser mayor a 0.";
             return resultado;}
 
-        resultado.fueExistoso = validarCuentaOrigen(cbuOrigen);
+        resultado.fueExistoso = validarCuenta(cbuOrigen);
         if (!resultado.fueExistoso) {
             resultado.mensaje = "El cbu esta mal escrito o el usuario no existe";
             return resultado;}
 
         return resultado ;
-    }
-
-    @Override
-    public boolean existeCuenta(String cbu) {
-        return usuarioRepo.buscarUsuarioClientePorCbu(cbu) !=null ;
     }
 
     @Override

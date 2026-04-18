@@ -1,14 +1,18 @@
 package BancoMartino.servicios;
 
 import BancoMartino.dominio.*;
+import Integration.ResultadoTransferencia;
+import Integration.TransactionServiceImpl;
 
 import java.util.List;
 
 public class AplicacionBanco {
     private final Banco banco;
+    private final TransactionServiceImpl transactionService;
 
     public AplicacionBanco(Banco banco) {
         this.banco = banco;
+        this.transactionService = new TransactionService(banco);
     }
 
     public Admin loginAdmin(String codigoSucursal, String usuario, String password) {
@@ -93,8 +97,8 @@ public class AplicacionBanco {
         admin.darBajaCuenta(numeroCuenta);
     }
 
-    public void transferir(Admin admin, String numeroOrigen, String numeroDestino, double monto) {
-        admin.transferir(numeroOrigen, numeroDestino, monto);
+    public ResultadoTransferencia transferir(String numeroOrigen, String numeroDestino, double monto) {
+        return transactionService.iniciarTransferencia(numeroOrigen, numeroDestino, monto);
     }
 
     public void depositar(Cuenta cuenta, double monto) {
