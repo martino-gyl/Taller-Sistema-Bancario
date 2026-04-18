@@ -24,7 +24,7 @@ public class TransaccionService implements TransactionServiceImpl {
         UsuarioCliente cuentaOrigen = usuarioRepo.buscarUsuarioClientePorCbu(cbuOrigen);
         return  cuentaOrigen.getSaldo() >= monto;
     }
-    public boolean validarCuenta(String cbuOrigen){
+    public boolean cuentaEsValida(String cbuOrigen){
         return usuarioRepo.buscarUsuarioClientePorCbu(cbuOrigen) != null;
     }
     public boolean depositar(UsuarioCliente user, Double monto) {
@@ -38,7 +38,7 @@ public class TransaccionService implements TransactionServiceImpl {
         return usuarioRepo.save(user);
     }
 
-    public boolean validarMonto(double monto){
+    public boolean montoEsValido(double monto){
         return monto>0;
     }
 
@@ -55,12 +55,12 @@ public class TransaccionService implements TransactionServiceImpl {
     public ResultadoTransferencia iniciarTransferencia(String cbuOrigen, String cbuDestino, double monto) {
         ResultadoTransferencia resultado = new ResultadoTransferencia();
 
-        resultado.fueExistoso = validarMonto(monto);
+        resultado.fueExistoso = montoEsValido(monto);
         if (!resultado.fueExistoso) {
             resultado.mensaje = "El monto tiene que ser mayor a 0.";
             return resultado;}
 
-        resultado.fueExistoso = validarCuenta(cbuOrigen);
+        resultado.fueExistoso = cuentaEsValida(cbuOrigen);
         if (!resultado.fueExistoso) {
             resultado.mensaje = "El cbu esta mal escrito o el usuario no existe";
             return resultado;}
@@ -77,12 +77,12 @@ public class TransaccionService implements TransactionServiceImpl {
     public ResultadoTransferencia recibirTransferencia(String cbuOrigen, String cbuDestino, double monto) {
         ResultadoTransferencia resultado = new ResultadoTransferencia();
 
-        resultado.fueExistoso = validarMonto(monto);
+        resultado.fueExistoso = montoEsValido(monto);
         if (!resultado.fueExistoso) {
             resultado.mensaje = "El monto tiene que ser mayor a 0.";
             return resultado;}
 
-        resultado.fueExistoso = validarCuenta(cbuOrigen);
+        resultado.fueExistoso = cuentaEsValida(cbuOrigen);
         if (!resultado.fueExistoso) {
             resultado.mensaje = "El cbu esta mal escrito o el usuario no existe";
             return resultado;}

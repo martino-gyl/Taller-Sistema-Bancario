@@ -28,7 +28,9 @@ public class Mediator {
         }
 
         transactionServiceOrigen.extraerPorCbu(cbuOrigen, monto);
+        transactionServiceOrigen.cargarMovimientoDeTransferenciaEnviada(cbuOrigen,cbuDestino,monto);
         transactionServiceDestino.depositarPorCbu(cbuDestino, monto);
+        transactionServiceDestino.cargarMovimientoDeTransferenciaRecibida(cbuOrigen,cbuDestino,monto);
 
         return resultadoDestino;
     }
