@@ -42,6 +42,16 @@ public class TransaccionService implements TransactionServiceImpl {
         return monto>0;
     }
 
+    @Override
+    public void cargarMovimientoDeTransferenciaEnviada(String cbuOrigen, String cbuDestino, double monto) {
+
+    }
+
+    @Override
+    public void cargarMovimientoDeTransferenciaRecibida(String cbuOrigen, String cbuDestino, double monto) {
+
+    }
+
     public ResultadoTransferencia iniciarTransferencia(String cbuOrigen, String cbuDestino, double monto) {
         ResultadoTransferencia resultado = new ResultadoTransferencia();
 
