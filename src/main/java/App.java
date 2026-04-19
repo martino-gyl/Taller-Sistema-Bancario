@@ -30,19 +30,16 @@ public class App {
         Map<String, ITransactionService> listaBancoss = new HashMap<>();
 
         Banco bancoMartino = initBancoMartino();
-        BancoMartino.servicios.TransactionService serviceMartino = new BancoMartino.servicios.TransactionService(bancoMartino);
 
         listaBancoss.put(transServiceMatias.getCodigoBanco(), transServiceMatias);
-        listaBancoss.put(serviceMartino.getCodigoBanco(), serviceMartino);
+        listaBancoss.put(bancoMartino.getCodigoBanco(), bancoMartino.getTransactionService());
         Mediator mediador = new Mediator(listaBancoss);
 
         transServiceMatias.setMediador(mediador);
-        serviceMartino.setMediador(mediador);
+        bancoMartino.setMediador(mediador);
 
         Menu menuMatias = new Menu(userServiceMatias, transServiceMatias, sucServiceMatias);
         MenuBancario menuMartino = new MenuBancario(bancoMartino);
-
-
 
 
         Scanner sc = new Scanner(System.in);

@@ -11,7 +11,7 @@ public class AplicacionBanco {
 
     public AplicacionBanco(Banco banco) {
         this.banco = banco;
-        this.transactionService = new TransactionService(banco);
+        this.transactionService = banco.getTransactionService();
     }
 
     public Admin loginAdmin(String codigoSucursal, String usuario, String password) {
