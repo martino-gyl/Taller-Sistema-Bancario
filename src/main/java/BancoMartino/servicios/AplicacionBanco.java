@@ -2,13 +2,12 @@ package BancoMartino.servicios;
 
 import BancoMartino.dominio.*;
 import Integration.ResultadoTransferencia;
-import Integration.TransactionServiceImpl;
 
 import java.util.List;
 
 public class AplicacionBanco {
     private final Banco banco;
-    private final TransactionServiceImpl transactionService;
+    private final TransactionService transactionService;
 
     public AplicacionBanco(Banco banco) {
         this.banco = banco;

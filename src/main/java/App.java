@@ -13,11 +13,9 @@ import BancoMatias.service.SucursalService;
 import BancoMatias.service.TransaccionService;
 import BancoMatias.service.UsuarioClienteService;
 import Integration.Mediator;
-import Integration.TransactionServiceImpl;
+import Integration.ITransactionService;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class App {
     public static void main(String[] args) {
@@ -29,19 +27,22 @@ public class App {
         UsuarioClienteService userServiceMatias = new UsuarioClienteService(userRepo);
         SucursalService sucServiceMatias = new SucursalService(sucRepo);
 
-        List<TransactionServiceImpl> listaBancos = new ArrayList<>();
-        listaBancos.add(transServiceMatias);
-        //listaBancos.add(serviceMartino);
+        Map<String, ITransactionService> listaBancoss = new HashMap<>();
 
-        Mediator mediador = new Mediator(listaBancos);
+        Banco bancoMartino = initBancoMartino();
+        BancoMartino.servicios.TransactionService serviceMartino = new BancoMartino.servicios.TransactionService(bancoMartino);
+
+        listaBancoss.put(transServiceMatias.getCodigoBanco(), transServiceMatias);
+        listaBancoss.put(serviceMartino.getCodigoBanco(), serviceMartino);
+        Mediator mediador = new Mediator(listaBancoss);
 
         transServiceMatias.setMediador(mediador);
-        //serviceMartino.setMediador(mediador);
+        serviceMartino.setMediador(mediador);
 
         Menu menuMatias = new Menu(userServiceMatias, transServiceMatias, sucServiceMatias);
-        MenuBancario menuMartino = new MenuBancario(initBancoMartino());
+        MenuBancario menuMartino = new MenuBancario(bancoMartino);
 
-       //  ejecutarMenuPrincipal(menuMatias, menuMartino);
+
 
 
         Scanner sc = new Scanner(System.in);
@@ -79,7 +80,7 @@ public class App {
         return new Menu(userService, transService, sucService);
     }
     private static Banco initBancoMartino(){
-        Banco bancoMartino = new Banco("Banco Dino","101");
+        Banco bancoMartino = new Banco("Banco Dino","102");
 
         Sucursal sucursal1 = new Sucursal("001", "Casa Central", "Av. Siempre Viva 123");
         Sucursal sucursal2 = new Sucursal("002", "Sucursal Norte", "Calle Norte 456");

@@ -1,16 +1,18 @@
 package BancoMatias.service;
 
+import BancoMatias.entity.Transaccion;
 import BancoMatias.entity.UsuarioCliente;
+import BancoMatias.entity.enums.EstadoTransaccion;
 import BancoMatias.repository.TransaccionRepository;
 import BancoMatias.repository.UsuarioRepository;
 import Integration.CbuService;
 import Integration.ResultadoTransferencia;
-import Integration.TransactionServiceImpl;
+import Integration.ITransactionService;
 import Integration.Mediator;
 
 import static BancoMatias.entity.Banco.CODIGO_BANCO_MATIAS;
 
-public class TransaccionService implements TransactionServiceImpl {
+public class TransaccionService implements ITransactionService {
     private UsuarioRepository usuarioRepo;
     private TransaccionRepository transaccionRepo;
     private Mediator mediador;
@@ -27,6 +29,8 @@ public class TransaccionService implements TransactionServiceImpl {
     public boolean cuentaEsValida(String cbuOrigen){
         return usuarioRepo.buscarUsuarioClientePorCbu(cbuOrigen) != null;
     }
+
+
     public boolean depositar(UsuarioCliente user, Double monto) {
         if (user == null || monto == null || monto <= 0) {
             return false;
@@ -42,72 +46,61 @@ public class TransaccionService implements TransactionServiceImpl {
         return monto>0;
     }
 
-    @Override
     public void cargarMovimientoDeTransferenciaEnviada(String cbuOrigen, String cbuDestino, double monto) {
 
     }
 
-    @Override
     public void cargarMovimientoDeTransferenciaRecibida(String cbuOrigen, String cbuDestino, double monto) {
 
     }
 
     public ResultadoTransferencia iniciarTransferencia(String cbuOrigen, String cbuDestino, double monto) {
-        ResultadoTransferencia resultado = new ResultadoTransferencia();
+        Transaccion intento = new Transaccion(cbuOrigen, cbuDestino, monto, EstadoTransaccion.PENDIENTE);
+        ResultadoTransferencia resultado;
 
-        resultado.fueExistoso = montoEsValido(monto);
-        if (!resultado.fueExistoso) {
-            resultado.mensaje = "El monto tiene que ser mayor a 0.";
-            return resultado;}
+        try {
+            if (!montoEsValido(monto)) throw new Exception("Monto debe ser mayor a 0.");
+            if (!validarSaldo(cbuOrigen, monto)) throw new Exception("Saldo insuficiente.");
+            if(!cuentaEsValida(cbuOrigen)) throw new Exception("El CBU es inválido o el usuario no existe en este banco.");
+            resultado = mediador.transferir(cbuOrigen, cbuDestino, monto);
 
-        resultado.fueExistoso = cuentaEsValida(cbuOrigen);
-        if (!resultado.fueExistoso) {
-            resultado.mensaje = "El cbu esta mal escrito o el usuario no existe";
-            return resultado;}
+            if (resultado.fueExistoso) {
+                intento.setEstado(EstadoTransaccion.EXITOSA);
+            } else {
+                intento.setEstado(EstadoTransaccion.FALLIDA);
+                intento.setMotivo(resultado.mensaje);
+            }
 
-
-        resultado.fueExistoso = validarSaldo(cbuOrigen, monto);
-        if (!resultado.fueExistoso) { resultado.mensaje = "Saldo insuficiente para realizar la operacion.";
-            return resultado;}
-
-        return mediador.transferir(cbuOrigen, cbuDestino, monto);
+        } catch (Exception e) {
+            resultado = new ResultadoTransferencia(false, e.getMessage());
+            intento.setEstado(EstadoTransaccion.RECHAZADA);
+            intento.setMotivo(e.getMessage());
+        } finally {
+            transaccionRepo.save(intento);
+        }
+        return resultado;
     }
 
-    @Override
-    public ResultadoTransferencia recibirTransferencia(String cbuOrigen, String cbuDestino, double monto) {
-        ResultadoTransferencia resultado = new ResultadoTransferencia();
 
-        resultado.fueExistoso = montoEsValido(monto);
-        if (!resultado.fueExistoso) {
-            resultado.mensaje = "El monto tiene que ser mayor a 0.";
-            return resultado;}
-
-        resultado.fueExistoso = cuentaEsValida(cbuOrigen);
-        if (!resultado.fueExistoso) {
-            resultado.mensaje = "El cbu esta mal escrito o el usuario no existe";
-            return resultado;}
-
-        return resultado ;
-    }
-
-    @Override
     public String getCodigoBanco() {
         return CODIGO_BANCO_MATIAS;
     }
 
+
     @Override
-    public void depositarPorCbu(String cbuDestino, double monto) {
-        UsuarioCliente cuentaDestino = usuarioRepo.buscarUsuarioClientePorCbu(cbuDestino);
-        cuentaDestino.sumarSaldo(monto);
+    public void depositarPorCbu(String cbuOrigen, String cbuDestino, double monto) {
+        UsuarioCliente cuenta = usuarioRepo.buscarUsuarioClientePorCbu(cbuDestino);
+        cuenta.sumarSaldo(monto);
+        transaccionRepo.save(new Transaccion(cbuOrigen, cbuDestino, monto, EstadoTransaccion.CONFIRMADA));
     }
 
     @Override
-    public void extraerPorCbu(String cbuOrigen, double monto) {
-        UsuarioCliente cuentaOrigen = usuarioRepo.buscarUsuarioClientePorCbu(cbuOrigen);
-        cuentaOrigen.restarSaldo(monto);
+    public void extraerPorCbu(String cbuOrigen, String cbuDestino, double monto) {
+        UsuarioCliente cuenta = usuarioRepo.buscarUsuarioClientePorCbu(cbuOrigen);
+        cuenta.restarSaldo(monto);
+        transaccionRepo.save(new Transaccion(cbuOrigen, cbuDestino, monto, EstadoTransaccion.CONFIRMADA));
     }
 
-    @Override
     public boolean esMiCbu(String cbu) {
         return CbuService.obtenerCodigoBanco(cbu).equals(CODIGO_BANCO_MATIAS);
     }
@@ -122,6 +115,15 @@ public class TransaccionService implements TransactionServiceImpl {
 
 
 
+    @Override
+    public void validarCapacidadDeRecepcion(String cbu, double monto) throws Exception {
 
+        if (!montoEsValido(monto)) {
+            throw new Exception("El monto tiene que ser mayor a 0.");
+        }
+        if (!cuentaEsValida(cbu)) {
+            throw new Exception("El CBU es inválido o el usuario no existe en este banco.");
+        }
+    }
 }
 

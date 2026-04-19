@@ -1,77 +1,67 @@
 package BancoMatias.entity;
 
+import BancoMatias.entity.enums.EstadoTransaccion;
+
+import java.rmi.server.UID;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class Transaccion {
-    private String id;
-    private Usuario emisor;
-    private Usuario destinatario;
-    private Double monto;
+    private UUID id;
+    private String cbuOrigen;
+    private String cbuDestino;
+    private double monto;
+    private EstadoTransaccion estado;
+    private String motivo;
+    private LocalDateTime fecha;
 
-    public boolean getTransaccionExitosa() {
-        return transaccionExitosa;
-    }
-
-    public void setTransaccionExitosa(boolean transaccionExitosa) {
-        this.transaccionExitosa = transaccionExitosa;
-    }
-
-    private boolean transaccionExitosa;
-
-    public Transaccion(Usuario emisor, Usuario destinatario, Double monto) {
-        this.id = UUID.randomUUID().toString();
-        this.emisor = emisor;
-        this.destinatario = destinatario;
+    public Transaccion(String origen, String destino, double monto, EstadoTransaccion estado) {
+        this.id = UUID.randomUUID();
+        this.cbuOrigen = origen;
+        this.cbuDestino = destino;
         this.monto = monto;
-      //  this.transaccionExitosa = tieneSaldoParaRealizarLaOperacion(emisor, monto);
+        this.estado = estado;
+        this.fecha = LocalDateTime.now();
     }
 
-//    public boolean tieneSaldoParaRealizarLaOperacion(Usuario cliente1, Double monto){
-//        if(cliente1.getSaldo()>=monto) {
-//            return true;}
-//        return false;
-//    }
-
-    public Double getMonto() {
-        return monto;
+    public String getCbuOrigen() {
+        return cbuOrigen;
     }
 
-    public void setMonto(Double monto) {
-        this.monto = monto;
-    }
-
-    public Usuario getDestinatario() {
-        return destinatario;
-    }
-
-    public void setDestinatario(Usuario destinatario) {
-        this.destinatario = destinatario;
-    }
-
-    public Usuario getEmisor() {
-        return emisor;
-    }
-
-    public void setEmisor(Usuario emisor) {
-        this.emisor = emisor;
-    }
-
-    public String getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setEstado(EstadoTransaccion estado) {
+        this.estado = estado;
     }
 
-    @Override
-    public String toString() {
-        return "\n {" +
-                "id= '" + id + '\'' +
-//                ", emisor= " + emisor.getName() +
-//                ", destinatario= " + destinatario.getName() +
-                ", monto= " + this.getMonto()+
-                ", transaccionExitosa= " + this.getTransaccionExitosa() +
-                '}';
+    public void setCbuOrigen(String cbuOrigen) {
+        this.cbuOrigen = cbuOrigen;
+    }
+
+    public String getCbuDestino() {
+        return cbuDestino;
+    }
+
+    public void setCbuDestino(String cbuDestino) {
+        this.cbuDestino = cbuDestino;
+    }
+
+    public double getMonto() {
+        return monto;
+    }
+
+    public void setMonto(double monto) {
+        this.monto = monto;
+    }
+
+
+    public String getMotivo() {
+        return motivo;
+    }
+
+    public void setMotivo(String motivo) {
+        this.motivo = motivo;
     }
 }

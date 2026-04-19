@@ -1,45 +1,34 @@
 package Integration;
 
-import java.util.Dictionary;
 import java.util.List;
+import java.util.Map;
 
 public class Mediator {
-    private List<TransactionServiceImpl> bancos;
+   // private List<ITransactionService> bancos;
+    private Map<String, ITransactionService> bancos;
 
-
-    public Mediator(List<TransactionServiceImpl> bancos) {
+    public Mediator(Map<String, ITransactionService> bancos) {
         this.bancos = bancos;
     }
 
     public ResultadoTransferencia transferir(String cbuOrigen, String cbuDestino, double monto) {
+        try {
+            ITransactionService origen = buscarBanco(cbuOrigen);
+            ITransactionService destino = buscarBanco(cbuDestino);
 
-        TransactionServiceImpl transactionServiceOrigen = buscarBanco(cbuOrigen);
-        TransactionServiceImpl transactionServiceDestino = buscarBanco(cbuDestino);
+            destino.validarCapacidadDeRecepcion(cbuDestino, monto);
 
-        if (transactionServiceOrigen == null || transactionServiceDestino == null) {
-            throw new IllegalArgumentException("TransactionService no está iniciado");
+            origen.extraerPorCbu(cbuOrigen, cbuDestino, monto);
+            destino.depositarPorCbu(cbuOrigen, cbuDestino, monto);
+
+            return new ResultadoTransferencia(true, "Transferencia Exitosa");
+        } catch (Exception e) {
+            return new ResultadoTransferencia(false, e.getMessage());
         }
-
-        ResultadoTransferencia resultadoDestino =
-                transactionServiceDestino.recibirTransferencia(cbuOrigen,cbuDestino,monto);
-
-        if (!resultadoDestino.fueExistoso) {
-            return resultadoDestino;
-        }
-
-        transactionServiceOrigen.extraerPorCbu(cbuOrigen, monto);
-        transactionServiceOrigen.cargarMovimientoDeTransferenciaEnviada(cbuOrigen,cbuDestino,monto);
-        transactionServiceDestino.depositarPorCbu(cbuDestino, monto);
-        transactionServiceDestino.cargarMovimientoDeTransferenciaRecibida(cbuOrigen,cbuDestino,monto);
-
-        return resultadoDestino;
     }
-
-    private TransactionServiceImpl buscarBanco(String cbu) {
-        return bancos.stream()
-                .filter(b -> b.esMiCbu(cbu))
-                .findFirst()
-                .orElse(null);
+    private ITransactionService buscarBanco(String cbu) {
+        String codigoBanco = CbuService.obtenerCodigoBanco(cbu);
+        return bancos.get(codigoBanco);
     }
 
 }

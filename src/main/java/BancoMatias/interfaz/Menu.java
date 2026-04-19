@@ -8,6 +8,7 @@ import BancoMatias.entity.enums.TipoDeCuenta;
 import BancoMatias.service.SucursalService;
 import BancoMatias.service.TransaccionService;
 import BancoMatias.service.UsuarioClienteService;
+import Integration.ResultadoTransferencia;
 
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -241,22 +242,25 @@ public class Menu {
 //
 //    }
 
+
     private void procesarTransferencia() {
         System.out.println("--- TRANSFERENCIA POR CBU ---");
-
-
         String cbuOrigen = ((UsuarioCliente) sesionActiva).getCbu();
 
         System.out.println("Su CBU es: " + cbuOrigen);
         System.out.print("Ingrese el CBU del destinatario: ");
-        String cbuDestino = teclado.nextLine(); // Leemos el CBU de 12 dígitos
-
+        String cbuDestino = teclado.nextLine();
         System.out.print("Ingrese el monto a transferir: ");
         double monto = teclado.nextDouble();
-        teclado.nextLine(); // Limpiar buffer
+        teclado.nextLine(); //
 
+        ResultadoTransferencia resultado = transService.iniciarTransferencia(cbuOrigen, cbuDestino, monto);
 
-        transService.iniciarTransferencia(cbuOrigen, cbuDestino, monto);
+        if (resultado.fueExistoso) {
+            System.out.println(resultado.mensaje);
+        } else {
+            System.err.println("Error: " + resultado.mensaje);
+        }
     }
 
     private void procesarRetiro() {
