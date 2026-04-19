@@ -30,7 +30,6 @@ public class App {
         Map<String, ITransactionService> listaBancoss = new HashMap<>();
 
         Banco bancoMartino = initBancoMartino();
-        //BancoMartino.servicios.TransactionService serviceMartino = new BancoMartino.servicios.TransactionService(bancoMartino);
 
         listaBancoss.put(transServiceMatias.getCodigoBanco(), transServiceMatias);
         listaBancoss.put(bancoMartino.getCodigoBanco(), bancoMartino.getTransactionService());
@@ -41,8 +40,6 @@ public class App {
 
         Menu menuMatias = new Menu(userServiceMatias, transServiceMatias, sucServiceMatias);
         MenuBancario menuMartino = new MenuBancario(bancoMartino);
-
-
 
 
         Scanner sc = new Scanner(System.in);

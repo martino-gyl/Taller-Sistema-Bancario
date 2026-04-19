@@ -125,7 +125,7 @@ public class Banco {
         return null;
     }
 
-    public ITransactionService getTransactionService() {
+    public TransactionService getTransactionService() {
         return transactionService;
     }
 
