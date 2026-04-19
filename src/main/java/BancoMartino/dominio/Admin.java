@@ -1,8 +1,5 @@
 package BancoMartino.dominio;
 
-import Integration.ResultadoTransferencia;
-import Integration.TransactionServiceImpl;
-
 import java.util.List;
 
 public class Admin  {

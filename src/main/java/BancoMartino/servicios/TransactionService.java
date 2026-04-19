@@ -6,9 +6,9 @@ import BancoMartino.dominio.TipoMovimiento;
 import Integration.CbuService;
 import Integration.Mediator;
 import Integration.ResultadoTransferencia;
-import Integration.TransactionServiceImpl;
+import Integration.ITransactionService;
 
-public class TransactionService implements TransactionServiceImpl {
+public class TransactionService implements ITransactionService {
     private Mediator mediador;
     private Banco banco;
 
@@ -96,7 +96,7 @@ public class TransactionService implements TransactionServiceImpl {
         cargarMovimientoDeTransferenciaEnviada(cbuOrigen, cbuDestino, monto);
     }
 
-    @Override
+
     public boolean esMiCbu(String cbu) {
         return CbuService.obtenerCodigoBanco(cbu).equals(banco.CODIGO_BANCO_MARTINO);
     }
@@ -112,4 +112,7 @@ public class TransactionService implements TransactionServiceImpl {
         }
     }
 
+    public void setMediador(Mediator mediador) {
+        this.mediador = mediador;
+    }
 }

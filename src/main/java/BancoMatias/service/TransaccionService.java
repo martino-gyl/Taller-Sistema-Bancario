@@ -7,12 +7,12 @@ import BancoMatias.repository.TransaccionRepository;
 import BancoMatias.repository.UsuarioRepository;
 import Integration.CbuService;
 import Integration.ResultadoTransferencia;
-import Integration.TransactionServiceImpl;
+import Integration.ITransactionService;
 import Integration.Mediator;
 
 import static BancoMatias.entity.Banco.CODIGO_BANCO_MATIAS;
 
-public class TransaccionService implements TransactionServiceImpl {
+public class TransaccionService implements ITransactionService {
     private UsuarioRepository usuarioRepo;
     private TransaccionRepository transaccionRepo;
     private Mediator mediador;
@@ -100,7 +100,7 @@ public class TransaccionService implements TransactionServiceImpl {
         cuenta.restarSaldo(monto);
         transaccionRepo.save(new Transaccion(cbuOrigen, cbuDestino, monto, EstadoTransaccion.CONFIRMADA));
     }
-    @Override
+
     public boolean esMiCbu(String cbu) {
         return CbuService.obtenerCodigoBanco(cbu).equals(CODIGO_BANCO_MATIAS);
     }

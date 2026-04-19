@@ -1,19 +1,20 @@
 package Integration;
 
-import java.util.Dictionary;
 import java.util.List;
+import java.util.Map;
 
 public class Mediator {
-    private List<TransactionServiceImpl> bancos;
+   // private List<ITransactionService> bancos;
+    private Map<String, ITransactionService> bancos;
 
-    public Mediator(List<TransactionServiceImpl> bancos) {
+    public Mediator(Map<String, ITransactionService> bancos) {
         this.bancos = bancos;
     }
 
     public ResultadoTransferencia transferir(String cbuOrigen, String cbuDestino, double monto) {
         try {
-            TransactionServiceImpl origen = buscarBanco(cbuOrigen);
-            TransactionServiceImpl destino = buscarBanco(cbuDestino);
+            ITransactionService origen = buscarBanco(cbuOrigen);
+            ITransactionService destino = buscarBanco(cbuDestino);
 
             destino.validarCapacidadDeRecepcion(cbuDestino, monto);
 
@@ -25,11 +26,9 @@ public class Mediator {
             return new ResultadoTransferencia(false, e.getMessage());
         }
     }
-    private TransactionServiceImpl buscarBanco(String cbu) {
-        return bancos.stream()
-                .filter(b -> b.esMiCbu(cbu))
-                .findFirst()
-                .orElse(null);
+    private ITransactionService buscarBanco(String cbu) {
+        String codigoBanco = CbuService.obtenerCodigoBanco(cbu);
+        return bancos.get(codigoBanco);
     }
 
 }
