@@ -83,15 +83,17 @@ public class TransactionService implements TransactionServiceImpl {
     }
 
     @Override
-    public void depositarPorCbu(String cbuDestino, double monto) {
+    public void depositarPorCbu(String cbuOrigen, String cbuDestino, double monto) {
         Cuenta cuentaDestino = banco.buscarCuentaPorCbu(cbuDestino);
         cuentaDestino.sumarSaldo(monto);
+        cargarMovimientoDeTransferenciaRecibida(cbuOrigen, cbuDestino, monto);
     }
 
     @Override
-    public void extraerPorCbu(String cbuOrigen, double monto) {
+    public void extraerPorCbu(String cbuOrigen, String cbuDestino, double monto) {
         Cuenta cuentaOrigen = banco.buscarCuentaPorCbu(cbuOrigen);
         cuentaOrigen.restarSaldo(monto);
+        cargarMovimientoDeTransferenciaEnviada(cbuOrigen, cbuDestino, monto);
     }
 
     @Override

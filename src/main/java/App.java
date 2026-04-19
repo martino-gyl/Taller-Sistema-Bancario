@@ -79,7 +79,7 @@ public class App {
         return new Menu(userService, transService, sucService);
     }
     private static Banco initBancoMartino(){
-        Banco bancoMartino = new Banco("Banco Dino","101");
+        Banco bancoMartino = new Banco("Banco Dino","102");
 
         Sucursal sucursal1 = new Sucursal("001", "Casa Central", "Av. Siempre Viva 123");
         Sucursal sucursal2 = new Sucursal("002", "Sucursal Norte", "Calle Norte 456");
