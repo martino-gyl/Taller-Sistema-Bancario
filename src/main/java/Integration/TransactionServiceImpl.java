@@ -1,15 +1,8 @@
 package Integration;
 
 public interface TransactionServiceImpl {
-    ResultadoTransferencia iniciarTransferencia(String cbuOrigen, String cbuDestino, double monto);
-    ResultadoTransferencia recibirTransferencia(String cbuOrigen, String cbuDestino, double monto);
-    void depositarPorCbu(String cbuOrigen, double monto);
-    void extraerPorCbu(String cbuDestino, double monto);
+    void extraerPorCbu(String cbu, double monto) throws Exception;
+    void depositarPorCbu(String cbu, double monto) throws Exception;
     boolean esMiCbu(String cbu);
-    String getCodigoBanco();
-    public boolean cuentaEsValida(String cbuOrigen);
-    public boolean saldoEsSuficiente(String cbuOrigen, double monto);
-    public boolean montoEsValido(double monto);
-    public void cargarMovimientoDeTransferenciaEnviada(String cbuOrigen,String cbuDestino,double monto);
-    public void cargarMovimientoDeTransferenciaRecibida(String cbuOrigen,String cbuDestino,double monto);
+    void validarCapacidadDeRecepcion(String cbu, double monto) throws Exception;
 }

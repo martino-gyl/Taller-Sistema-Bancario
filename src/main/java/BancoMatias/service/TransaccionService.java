@@ -27,6 +27,11 @@ public class TransaccionService implements TransactionServiceImpl {
     public boolean cuentaEsValida(String cbuOrigen){
         return usuarioRepo.buscarUsuarioClientePorCbu(cbuOrigen) != null;
     }
+
+    public boolean saldoEsSuficiente(String cbuOrigen, double monto) {
+        return false;
+    }
+
     public boolean depositar(UsuarioCliente user, Double monto) {
         if (user == null || monto == null || monto <= 0) {
             return false;
@@ -42,12 +47,10 @@ public class TransaccionService implements TransactionServiceImpl {
         return monto>0;
     }
 
-    @Override
     public void cargarMovimientoDeTransferenciaEnviada(String cbuOrigen, String cbuDestino, double monto) {
 
     }
 
-    @Override
     public void cargarMovimientoDeTransferenciaRecibida(String cbuOrigen, String cbuDestino, double monto) {
 
     }
@@ -73,24 +76,8 @@ public class TransaccionService implements TransactionServiceImpl {
         return mediador.transferir(cbuOrigen, cbuDestino, monto);
     }
 
-    @Override
-    public ResultadoTransferencia recibirTransferencia(String cbuOrigen, String cbuDestino, double monto) {
-        ResultadoTransferencia resultado = new ResultadoTransferencia();
 
-        resultado.fueExistoso = montoEsValido(monto);
-        if (!resultado.fueExistoso) {
-            resultado.mensaje = "El monto tiene que ser mayor a 0.";
-            return resultado;}
 
-        resultado.fueExistoso = cuentaEsValida(cbuOrigen);
-        if (!resultado.fueExistoso) {
-            resultado.mensaje = "El cbu esta mal escrito o el usuario no existe";
-            return resultado;}
-
-        return resultado ;
-    }
-
-    @Override
     public String getCodigoBanco() {
         return CODIGO_BANCO_MATIAS;
     }
@@ -122,6 +109,15 @@ public class TransaccionService implements TransactionServiceImpl {
 
 
 
+    @Override
+    public void validarCapacidadDeRecepcion(String cbu, double monto) throws Exception {
 
+        if (!montoEsValido(monto)) {
+            throw new Exception("El monto tiene que ser mayor a 0.");
+        }
+        if (!cuentaEsValida(cbu)) {
+            throw new Exception("El CBU es inválido o el usuario no existe en este banco.");
+        }
+    }
 }
 
