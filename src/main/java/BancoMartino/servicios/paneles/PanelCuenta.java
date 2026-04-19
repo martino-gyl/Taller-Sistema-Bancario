@@ -34,7 +34,7 @@ public class PanelCuenta extends Panel {
                 switch (opcion) {
                     case 1 -> depositar(cuenta);
                     case 2 -> extraer(cuenta);
-                    case 3 -> transferir();
+                    case 3 -> transferir(cuenta);
                     case 4 -> System.out.println("Saldo actual: $" + cuenta.getSaldo());
                     case 5 -> System.out.println("\n" + getAplicacion().resumenCuenta(cuenta));
                     case 6 -> System.out.println("\n" + getAplicacion().movimientosCuenta(cuenta.getCbu()));
@@ -74,14 +74,13 @@ public class PanelCuenta extends Panel {
         System.out.println("Extracción realizada.");
     }
 
-    private void transferir() {
+    private void transferir(Cuenta cuenta) {
         System.out.print("CBU destino: ");
         String cbuDestino = leerTexto();
-
         System.out.print("Monto a transferir: ");
         double monto = leerDouble();
-
-        ResultadoTransferencia resultado = getAplicacion().transferir(cbuDestino, cbuDestino, monto);
+        String cbuOrigen = cuenta.getCbu();
+        ResultadoTransferencia resultado = getAplicacion().transferir(cbuOrigen, cbuDestino, monto);
         if(resultado.fueExistoso){
             System.out.println("Transferencia realizada correctamente.");
         } else {
