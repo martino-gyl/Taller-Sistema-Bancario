@@ -10,12 +10,14 @@ public class Sucursal {
     private String direccion;
     private Admin admin;
     private List<Cuenta> cuentas;
+    private int proximoNumeroCuenta;
 
     public Sucursal(String codigo, String nombre, String direccion) {
         this.codigo = codigo;
         this.nombre = nombre;
         this.direccion = direccion;
         this.cuentas = new ArrayList<>();
+        this.proximoNumeroCuenta = 1;
     }
 
     public String getCodigo() {
@@ -41,8 +43,14 @@ public class Sucursal {
         }
     }
 
-    public int siguienteNumeroCuenta(){
-        return cuentas.size()+1;
+    public int obtenerSiguienteNumeroCuenta() {
+        int numeroActual = proximoNumeroCuenta;
+        proximoNumeroCuenta++;
+        return numeroActual;
+    }
+
+    public int getProximoNumeroCuenta() {
+        return proximoNumeroCuenta;
     }
 
     public List<Cuenta> getCuentas() {
