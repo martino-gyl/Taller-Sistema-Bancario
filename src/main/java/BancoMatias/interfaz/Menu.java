@@ -306,7 +306,7 @@ public class Menu {
             case 1 -> mostrarBalanceSucursal();
             case 2 -> mostrarMovimientosSucursal();
             case 3 -> listarUsuariosActualesDeEstaSucursal();
-            case 4 ->listarUsuariosGlobales();
+            case 4 -> listarUsuariosGlobales();
             case 5 -> mostrarBalanceGlobalBanco();
             case 6 -> {
                 sesionActiva = null;
@@ -442,6 +442,29 @@ public class Menu {
         System.out.printf(" CAPITAL TOTAL DEL BANCO:               $%.2f%n", totalGeneral);
         System.out.println("====================================================");
     }
+
+
+
+    private void mostrarBalanceSucursal() {
+        System.out.println("\n=== BALANCE SUCURSAL: " + sucursalActual.getNombre() + " ===");
+        double total = 0;
+
+        ArrayList<UsuarioCliente> clientes = sucursalActual.getUsuariosActivos();
+
+        if (clientes.isEmpty()) {
+            System.out.println("No hay clientes registrados en esta sucursal.");
+        } else {
+            for (UsuarioCliente cliente : clientes) {
+                total += cliente.getSaldo();
+                System.out.printf("- %-20s | CBU: %s | Saldo: $%.2f%n",
+                        cliente.getName(), cliente.getCbu(), cliente.getSaldo());
+            }
+            System.out.println("--------------------------------------------------");
+            System.out.printf("TOTAL SUCURSAL: $%.2f%n", total);
+        }
+    }
+
+
 
     public TransaccionService getTransaccionService() {
         return transService;
