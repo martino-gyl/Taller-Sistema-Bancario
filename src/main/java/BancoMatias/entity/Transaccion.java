@@ -64,4 +64,27 @@ public class Transaccion {
     public void setMotivo(String motivo) {
         this.motivo = motivo;
     }
+
+    public EstadoTransaccion getEstado() {
+        return estado;
+    }
+
+    @Override
+    public String toString() {
+        java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        String fechaFormateada = (fecha != null) ? fecha.format(formatter) : "Sin fecha";
+
+        String idCorto = id.toString().substring(0, 8).toUpperCase();
+
+        return String.format(
+                " [#%s] %s | %-12s | $%8.2f | De: %s -> A: %s | Motivo: %s",
+                idCorto,
+                fechaFormateada,
+                estado,
+                monto,
+                cbuOrigen,
+                cbuDestino,
+                (motivo != null ? motivo : "N/A")
+        );
+    }
 }
