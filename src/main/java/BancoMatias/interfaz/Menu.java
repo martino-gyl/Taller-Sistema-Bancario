@@ -294,7 +294,7 @@ public class Menu {
         --- MODO ADMINISTRADOR (%s) ---
         1) Balance Total de la Sucursal
         2) Historial de movimientos de la Sucursal
-        3) Listar TODOS los usuarios del Banco
+        3) Listar TODOS los usuarios de esta sucursal
         4) Cerrar sesión
         5) Salir
         """);
@@ -305,12 +305,7 @@ public class Menu {
         switch (op) {
             case 1 -> mostrarBalanceSucursal();
             case 2 -> mostrarMovimientosSucursal();
-            case 3 -> {
-                System.out.println("--- LISTADO DE USUARIOS ACTUALE ---");
-                sucursalActual.getUsuariosActivos().forEach(u ->
-                        System.out.println("- " + u.getName() + " [CBU: " + u.getCbu() + "]")
-                );
-            }
+            case 3 -> listarUsuariosActualesDeEstaSucursal();
             case 4 -> {
                 sesionActiva = null;
                 System.out.println("Sesión de administrador cerrada.");
@@ -324,22 +319,49 @@ public class Menu {
         }
     }
 
+    private void listarUsuariosActualesDeEstaSucursal(){
+        System.out.println("\n--- LISTADO DE USUARIOS ACTUALES ---");
+        ArrayList<UsuarioCliente> usuarios = sucursalActual.getUsuariosActivos();
+
+        if (usuarios.isEmpty()) {
+            System.out.println("No hay usuarios registrados en esta sucursal.");
+        } else {
+            for (UsuarioCliente u : usuarios) {
+                // Usamos %-18s para que la etiqueta ocupe 18 espacios y todo lo demás se alinee
+                System.out.printf("""
+                 Nombre:          %s
+                 CBU:             %s
+                 Saldo en cuenta: $%.2f
+                 Tipo de cuenta:  %s
+                ------------------------------------
+                """,
+                        u.getName(),
+                        u.getCbu(),
+                        u.getSaldo(),
+                        u.getTipoDeCuenta()
+                );
+            }
+        }
+
+
+    }
     private void mostrarMovimientosSucursal() {
         System.out.println("\n=== AUDITORÍA DE MOVIMIENTOS - SUCURSAL: " + sucursalActual.getNombre() + " ===");
 
-        // Traemos TODAS las transacciones registradas en el banco
         List<Transaccion> todas = transService.getHistorialGlobal();
         boolean huboMovimientos = false;
 
         for (Transaccion t : todas) {
-            // Verificamos si alguno de los CBUs involucrados es de nuestra sucursal
             boolean origenEsLocal = sucursalActual.getUsuariosActivos().stream()
                     .anyMatch(u -> u.getCbu().equals(t.getCbuOrigen()));
             boolean destinoEsLocal = sucursalActual.getUsuariosActivos().stream()
                     .anyMatch(u -> u.getCbu().equals(t.getCbuDestino()));
 
             if (origenEsLocal || destinoEsLocal) {
-                System.out.println(t); // Usamos el toString pro que hicimos antes
+                if (t.getEstado() != EstadoTransaccion.CONFIRMADA) {
+                    System.out.println(t);
+                }
+
                 huboMovimientos = true;
             }
         }

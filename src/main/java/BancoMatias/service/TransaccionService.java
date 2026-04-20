@@ -1,8 +1,10 @@
 package BancoMatias.service;
 
+import BancoMartino.dominio.TipoMovimiento;
 import BancoMatias.entity.Transaccion;
 import BancoMatias.entity.UsuarioCliente;
 import BancoMatias.entity.enums.EstadoTransaccion;
+import BancoMatias.entity.enums.TipoDeTransaccion;
 import BancoMatias.repository.TransaccionRepository;
 import BancoMatias.repository.UsuarioRepository;
 import Integration.CbuService;
@@ -96,6 +98,7 @@ public class TransaccionService implements ITransactionService {
         cuenta.sumarSaldo(monto);
         Transaccion t = new Transaccion(cbuOrigen, cbuDestino, monto, EstadoTransaccion.EXITOSA);
         cuenta.getHistorialTransaccion().add(t);
+        t.setTipoDeTransaccion(TipoDeTransaccion.INGRESO);
         transaccionRepo.save(t);
     }
 
