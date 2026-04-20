@@ -91,12 +91,16 @@ public class UsuarioCliente extends Usuario{
 
     @Override
     public String toString() {
-        return "UsuarioCliente{" +
-                "cbu='" + cbu + '\'' +
-                ", saldo=" + saldo +
-                ", tipoDeCuenta=" + tipoDeCuenta +
-                ", direccion='" + direccion + '\'' +
-                ", name='" + name + '\'' +
-                '}';
+        return String.format(
+                "\n======================================" +
+                        "\n       DATOS DE LA CUENTA" +
+                        "\n======================================" +
+                        "\n Nombre:          %s" +
+                        "\n CBU:             %s" +
+                        "\n Saldo en cuenta: $%.2f" +
+                        "\n Tipo de cuenta:  %s" +
+                        "\n======================================",
+                name, cbu, saldo, tipoDeCuenta
+        );
     }
 }

@@ -1,14 +1,19 @@
 package BancoMatias.service;
 
+import BancoMartino.dominio.TipoMovimiento;
 import BancoMatias.entity.Transaccion;
 import BancoMatias.entity.UsuarioCliente;
 import BancoMatias.entity.enums.EstadoTransaccion;
+import BancoMatias.entity.enums.TipoDeTransaccion;
 import BancoMatias.repository.TransaccionRepository;
 import BancoMatias.repository.UsuarioRepository;
 import Integration.CbuService;
 import Integration.ResultadoTransferencia;
 import Integration.ITransactionService;
 import Integration.Mediator;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static BancoMatias.entity.Banco.CODIGO_BANCO_MATIAS;
 
@@ -21,7 +26,9 @@ public class TransaccionService implements ITransactionService {
         this.usuarioRepo = usuarioRepo;
         this.transaccionRepo = transaccionRepo;
     }
-
+    public boolean montoEsValido(double monto){
+        return monto>0;
+    }
     public boolean validarSaldo(String cbuOrigen, double monto){
         UsuarioCliente cuentaOrigen = usuarioRepo.buscarUsuarioClientePorCbu(cbuOrigen);
         return  cuentaOrigen.getSaldo() >= monto;
@@ -41,11 +48,13 @@ public class TransaccionService implements ITransactionService {
         user.setSaldo(user.getSaldo() + monto);
         return usuarioRepo.save(user);
     }
-
-    public boolean montoEsValido(double monto){
-        return monto>0;
+    public void extraer(UsuarioCliente user, Double monto) throws Exception {
+        if (monto <= 0) {throw new Exception("El monto tiene que ser mayor que 0");}
+        if (!usuarioRepo.existe(user)) {throw new Exception("El usuario no existe en este banco");}
+        if (user.getSaldo() < monto) {throw new Exception("Saldo insuficiente. Saldo actual: $" + user.getSaldo());}
+        user.setSaldo(user.getSaldo() - monto);
+        usuarioRepo.save(user);
     }
-
 
     public ResultadoTransferencia iniciarTransferencia(String cbuOrigen, String cbuDestino, double monto) {
         Transaccion intento = new Transaccion(cbuOrigen, cbuDestino, monto, EstadoTransaccion.PENDIENTE);
@@ -70,6 +79,9 @@ public class TransaccionService implements ITransactionService {
             intento.setMotivo(e.getMessage());
         } finally {
             transaccionRepo.save(intento);
+            UsuarioCliente cuentaOrigen = usuarioRepo.buscarUsuarioClientePorCbu(cbuOrigen);
+            if(cuentaOrigen != null) { cuentaOrigen.getHistorialTransaccion().add(intento);}
+
         }
         return resultado;
     }
@@ -84,14 +96,19 @@ public class TransaccionService implements ITransactionService {
     public void depositarPorCbu(String cbuOrigen, String cbuDestino, double monto) {
         UsuarioCliente cuenta = usuarioRepo.buscarUsuarioClientePorCbu(cbuDestino);
         cuenta.sumarSaldo(monto);
-        transaccionRepo.save(new Transaccion(cbuOrigen, cbuDestino, monto, EstadoTransaccion.EXITOSA));
+        Transaccion t = new Transaccion(cbuOrigen, cbuDestino, monto, EstadoTransaccion.EXITOSA);
+        cuenta.getHistorialTransaccion().add(t);
+        t.setTipoDeTransaccion(TipoDeTransaccion.INGRESO);
+        transaccionRepo.save(t);
     }
 
     @Override
     public void extraerPorCbu(String cbuOrigen, String cbuDestino, double monto) {
         UsuarioCliente cuenta = usuarioRepo.buscarUsuarioClientePorCbu(cbuOrigen);
         cuenta.restarSaldo(monto);
-        transaccionRepo.save(new Transaccion(cbuOrigen, cbuDestino, monto, EstadoTransaccion.CONFIRMADA));
+        Transaccion t = new Transaccion(cbuOrigen, cbuDestino, monto, EstadoTransaccion.CONFIRMADA);
+        cuenta.getHistorialTransaccion().add(t);
+        transaccionRepo.save(t);
     }
 
     public boolean esMiCbu(String cbu) {
@@ -101,7 +118,9 @@ public class TransaccionService implements ITransactionService {
     public Mediator getMediador() {
         return mediador;
     }
-
+    public List<Transaccion> getHistorialGlobal() {
+        return transaccionRepo.findAll(); // El repo ya lo tiene
+    }
     public void setMediador(Mediator mediador) {
         this.mediador = mediador;
     }
@@ -118,5 +137,7 @@ public class TransaccionService implements ITransactionService {
             throw new Exception("El CBU es inválido o el usuario no existe en este banco.");
         }
     }
+
+
 }
 

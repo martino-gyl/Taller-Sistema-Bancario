@@ -1,9 +1,7 @@
 package BancoMatias.interfaz;
 
-import BancoMatias.entity.Admin;
-import BancoMatias.entity.Sucursal;
-import BancoMatias.entity.Usuario;
-import BancoMatias.entity.UsuarioCliente;
+import BancoMatias.entity.*;
+import BancoMatias.entity.enums.EstadoTransaccion;
 import BancoMatias.entity.enums.TipoDeCuenta;
 import BancoMatias.service.SucursalService;
 import BancoMatias.service.TransaccionService;
@@ -11,6 +9,7 @@ import BancoMatias.service.UsuarioClienteService;
 import Integration.ResultadoTransferencia;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class Menu {
@@ -33,7 +32,7 @@ public class Menu {
     }
 
 
-    public void mostrarMenu() {
+    public void mostrarMenu() throws Exception {
         boolean correr = true;
         while (correr) {
             System.out.println("\n-----Bienvenido a nuestro banco-----\n");
@@ -134,7 +133,7 @@ public class Menu {
             System.out.println("""
         --- SUCURSAL: """ + sucursalActual.getNombre() + """
         
-         1) Registrar usuario
+        1) Registrar usuario
         2) Iniciar sesión Usuario
         3) Iniciar sesión Admin
         0) Salir de la sucursal
@@ -181,14 +180,14 @@ public class Menu {
         }
     }
 
-    private void menuCliente() {
+    private void menuCliente() throws Exception {
         System.out.println("""
             --- MENÚ CLIENTE (%s) ---
             1) Depositar dinero
             2) Retirar dinero
             3) Realizar una transferencia
             4) Mostrar datos de la cuenta
-            5) Eliminar mi cuenta
+            5) Historial de transferencias
             6) Cerrar sesión
             7) Salir de la sucursal
             """);
@@ -201,7 +200,7 @@ public class Menu {
             case 2 -> procesarRetiro();
             case 3 -> procesarTransferencia();
             case 4 -> System.out.println(sesionActiva); // Aprovechamos el toString
-            case 5 -> solicitarBaja();
+            case 5 -> historialDeTransferencias();
             case 6 -> {
                 sesionActiva = null;
                 System.out.println("Sesión cerrada.");
@@ -215,10 +214,30 @@ public class Menu {
         }
     }
 
-    private void solicitarBaja() {
+    private void historialDeTransferencias() {
+
+            UsuarioCliente cliente = (UsuarioCliente) sesionActiva;
+            ArrayList<Transaccion> historial = cliente.getHistorialTransaccion();
+
+            System.out.println("\n--- HISTORIAL DE TRANSFERENCIAS ---");
+
+            if (historial == null || historial.isEmpty()) {
+                System.out.println(" Aún no has realizado movimientos.");
+            } else {
+                for (Transaccion t : historial) {
+                    // FILTRO: Solo imprimimos si NO es una confirmación interna
+                    // Queremos ver: EXITOSA, FALLIDA o RECHAZADA
+                    if (t.getEstado() != EstadoTransaccion.CONFIRMADA) {
+                        System.out.println(t);
+                    }
+                }
+            }
+            System.out.println("------------------------------------");
     }
 
 
+    private void solicitarBaja() {
+    }
 
     private void procesarTransferencia() {
         System.out.println("--- TRANSFERENCIA POR CBU ---");
@@ -240,7 +259,20 @@ public class Menu {
         }
     }
 
-    private void procesarRetiro() {
+    private void procesarRetiro() { // Ya no necesita el "throws Exception" porque la atrapamos acá
+        System.out.println("Su saldo actual es de $" + ((UsuarioCliente) sesionActiva).getSaldo());
+        System.out.print("Ingrese cuanto desea retirar: ");
+        double montoARetirar = teclado.nextDouble();
+
+        try {
+            transService.extraer((UsuarioCliente) sesionActiva, montoARetirar);
+
+            System.out.println("Retiraste $" + montoARetirar + " con éxito.");
+            System.out.println("Tu nuevo saldo es de $" + ((UsuarioCliente) sesionActiva).getSaldo());
+
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
     }
 
     private void procesarDeposito() {
@@ -257,34 +289,30 @@ public class Menu {
 
     private void menuAdmin() {
         System.out.println("""
-            --- MODO ADMINISTRADOR: ---
-            Ingrese el número que corresponda con la acción que desee realizar:
-            1) Generar balance de esta sucursal
-            2) Dar de alta una cuenta
-            3) Dar de baja una cuenta
-            4) Listar Usuarios de esta sucursal
-            5) Cerrar sesión
-            6) Salir de la sucursal
-            """);
+        --- MODO ADMINISTRADOR (%s) ---
+        1) Balance Total de la Sucursal
+        2) Historial de movimientos de la Sucursal
+        3) Listar los usuarios de esta sucursal
+        4) Listar todos los usuarios del banco
+        5) Mostrar balance total del banco
+        6) Cerrar sesión
+        7) Salir
+        """);
 
         int op = teclado.nextInt();
-        teclado.nextLine(); // Limpiar el buffer
+        teclado.nextLine();
 
         switch (op) {
-            case 1 -> {}
-            case 2 -> registrarUsuario();
-            case 3 -> darDeBajaCuenta();   // El método que gestiona la eliminación
-            case 4 -> {
-                System.out.println("--- LISTADO DE USUARIOS ACTUALE ---");
-                sucursalActual.getUsuariosActivos().forEach(u ->
-                        System.out.println("- " + u.getName() + " [CBU: " + u.getCbu() + "]")
-                );
-            }
-            case 5 -> {
+            case 1 -> mostrarBalanceSucursal();
+            case 2 -> mostrarMovimientosSucursal();
+            case 3 -> listarUsuariosActualesDeEstaSucursal();
+            case 4 -> listarUsuariosGlobales();
+            case 5 -> mostrarBalanceGlobalBanco();
+            case 6 -> {
                 sesionActiva = null;
                 System.out.println("Sesión de administrador cerrada.");
             }
-            case 6 -> {
+            case 7 -> {
                 sesionActiva = null;
                 sucursalActual = null;
                 System.out.println("Saliendo de la sucursal...");
@@ -293,8 +321,132 @@ public class Menu {
         }
     }
 
-    private void darDeBajaCuenta() {
+    private void listarUsuariosActualesDeEstaSucursal(){
+        System.out.println("\n--- LISTADO DE USUARIOS ACTUALES ---");
+        ArrayList<UsuarioCliente> usuarios = sucursalActual.getUsuariosActivos();
+
+        if (usuarios.isEmpty()) {
+            System.out.println("No hay usuarios registrados en esta sucursal.");
+        } else {
+            for (UsuarioCliente u : usuarios) {
+
+                System.out.printf("""
+                 Nombre:          %s
+                 CBU:             %s
+                 Saldo en cuenta: $%.2f
+                 Tipo de cuenta:  %s
+                ------------------------------------
+                """,
+                        u.getName(),
+                        u.getCbu(),
+                        u.getSaldo(),
+                        u.getTipoDeCuenta()
+                );
+            }
+        }
+
+
     }
+    private void mostrarMovimientosSucursal() {
+        System.out.println("\n=== AUDITORÍA DE MOVIMIENTOS - SUCURSAL: " + sucursalActual.getNombre() + " ===");
+
+        List<Transaccion> todas = transService.getHistorialGlobal();
+        boolean huboMovimientos = false;
+
+        for (Transaccion t : todas) {
+            boolean origenEsLocal = sucursalActual.getUsuariosActivos().stream()
+                    .anyMatch(u -> u.getCbu().equals(t.getCbuOrigen()));
+            boolean destinoEsLocal = sucursalActual.getUsuariosActivos().stream()
+                    .anyMatch(u -> u.getCbu().equals(t.getCbuDestino()));
+
+            if (origenEsLocal || destinoEsLocal) {
+                if (t.getEstado() != EstadoTransaccion.CONFIRMADA) {
+                    System.out.println(t);
+                }
+
+                huboMovimientos = true;
+            }
+        }
+
+        if (!huboMovimientos) {
+            System.out.println("No se registraron movimientos en esta sucursal.");
+        }
+        System.out.println("--------------------------------------------------");
+    }
+
+
+
+    private void mostrarBalanceSucursal() {
+        System.out.println("\n=== BALANCE SUCURSAL: " + sucursalActual.getNombre() + " ===");
+        double total = 0;
+
+        ArrayList<UsuarioCliente> clientes = sucursalActual.getUsuariosActivos();
+
+        if (clientes.isEmpty()) {
+            System.out.println("No hay clientes registrados en esta sucursal.");
+        } else {
+            for (UsuarioCliente cliente : clientes) {
+                total += cliente.getSaldo();
+                System.out.printf("- %-20s | CBU: %s | Saldo: $%.2f%n",
+                        cliente.getName(), cliente.getCbu(), cliente.getSaldo());
+            }
+            System.out.println("--------------------------------------------------");
+            System.out.printf("TOTAL SUCURSAL: $%.2f%n", total);
+            System.out.println("--------------------------------------------------");
+        }
+    }
+
+    private void listarUsuariosGlobales() {
+        System.out.println("\n--- LISTADO GLOBAL DE USUARIOS ---");
+        ArrayList<Sucursal> sucursales = Banco.getInstancia().getSucursales();
+        boolean hayUsuarios = false;
+
+        for (Sucursal suc : sucursales) {
+            for (UsuarioCliente u : suc.getUsuariosActivos()) {
+                // Formato: Nombre. Tipo, sucursal Nombre, balance $...
+                System.out.printf("%s. %s, sucursal %s, balance $%.2f%n",
+                        u.getName(),
+                        u.getTipoDeCuenta(),
+                        suc.getNombre(),
+                        u.getSaldo());
+                hayUsuarios = true;
+            }
+        }
+
+        if (!hayUsuarios) {
+            System.out.println("No hay usuarios registrados en ninguna sucursal.");
+        }
+        System.out.println("----------------------------------");
+    }
+    private void mostrarBalanceGlobalBanco() {
+        System.out.println("\n========== BALANCE CONSOLIDADO DEL BANCO ==========");
+        double totalGeneral = 0;
+        ArrayList<Sucursal> sucursales = Banco.getInstancia().getSucursales();
+
+        for (Sucursal suc : sucursales) {
+            double subtotalSucursal = 0;
+
+            // Sumamos los saldos de los usuarios de esta sucursal específica
+            for (UsuarioCliente u : suc.getUsuariosActivos()) {
+                subtotalSucursal += u.getSaldo();
+            }
+
+            // Mostramos el subtotal de la sucursal
+            System.out.printf("Sucursal %-25s | Saldo Total: $%.2f%n",
+                    suc.getNombre(), subtotalSucursal);
+
+            totalGeneral += subtotalSucursal;
+        }
+
+        System.out.println("====================================================");
+        System.out.printf(" CAPITAL TOTAL DEL BANCO:               $%.2f%n", totalGeneral);
+        System.out.println("====================================================");
+    }
+
+
+
+
+
 
     public TransaccionService getTransaccionService() {
         return transService;
