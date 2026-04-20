@@ -318,6 +318,10 @@ public class Menu {
 
     private void darDeBajaCuenta() {
     }
+
+    public TransaccionService getTransaccionService() {
+        return transService;
+    }
 }
 
 

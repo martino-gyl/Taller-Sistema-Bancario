@@ -1,8 +1,8 @@
 package BancoMartino.dominio;
 
+import BancoMartino.servicios.TransaccionRepositorio;
 import BancoMartino.servicios.TransactionService;
 import Integration.CbuService;
-import Integration.ITransactionService;
 import Integration.Mediator;
 
 import java.util.ArrayList;
@@ -15,13 +15,15 @@ public class Banco {
     private CbuService cbuService;
     public final String CODIGO_BANCO_MARTINO = "102";
     private TransactionService transactionService;
+    private TransaccionRepositorio transaccionRepositorio;
 
     public Banco(String nombre, String codigoBanco) {
         this.nombre = nombre;
         this.codigoBanco = codigoBanco;
         this.sucursales = new ArrayList<>();
         this.cbuService = new CbuService();
-        this.transactionService = new TransactionService(this);
+        this.transaccionRepositorio = new TransaccionRepositorio();
+        this.transactionService = new TransactionService(this, transaccionRepositorio);
     }
 
     public String getNombre() {

@@ -1,6 +1,7 @@
 package BancoMartino.servicios;
 
 import BancoMartino.dominio.*;
+import BancoMatias.entity.enums.EstadoTransaccion;
 import Integration.ResultadoTransferencia;
 
 import java.util.List;
@@ -134,26 +135,45 @@ public class AplicacionBanco {
         return resumenCuenta(buscarCuenta(cbu));
     }
 
-    public String movimientosCuenta(String numeroCuenta) {
-        Cuenta cuenta = buscarCuenta(numeroCuenta);
+    public String transaccionesCuenta(String cbu) {
+        List<Transaccion> transacciones = transactionService.obtenerTransaccionesPorCbu(cbu);
+
+        List<Transaccion> transaccionesVisibles = transacciones.stream()
+                .filter(t ->
+                        t.getEstado() == EstadoTransaccion.EXITOSA ||
+                                t.getEstado() == EstadoTransaccion.FALLIDA ||
+                                t.getEstado() == EstadoTransaccion.RECHAZADA
+                )
+                .toList();
 
         StringBuilder sb = new StringBuilder();
-        sb.append("=== MOVIMIENTOS ===\n");
+        sb.append("=== TRANSACCIONES DE LA CUENTA ").append(cbu).append(" ===\n");
 
-        if (cuenta.getMovimientos().isEmpty()) {
-            sb.append("La cuenta no tiene movimientos.");
+        if (transaccionesVisibles.isEmpty()) {
+            sb.append("La cuenta no tiene transacciones registradas.");
             return sb.toString();
         }
 
-        for (Movimiento movimiento : cuenta.getMovimientos()) {
-            sb.append(movimiento.getFecha())
-                    .append(" | ")
-                    .append(movimiento.getTipo())
-                    .append(" | $")
-                    .append(movimiento.getMonto())
-                    .append(" | ")
-                    .append(movimiento.getDetalle())
-                    .append("\n");
+        int numero = 1;
+
+        for (Transaccion transaccion : transaccionesVisibles) {
+            boolean enviada = cbu.equals(transaccion.getCbuOrigen());
+            String tipo = enviada ? "TRANSFERENCIA ENVIADA" : "TRANSFERENCIA RECIBIDA";
+            String contraparte = enviada
+                    ? transaccion.getCbuDestino()
+                    : transaccion.getCbuOrigen();
+
+            sb.append("\n")
+                    .append(numero++)
+                    .append(")\n")
+                    .append("  Tipo: ").append(tipo).append("\n")
+                    .append("  Cuenta contraparte: ").append(contraparte).append("\n")
+                    .append("  Monto: $").append(String.format("%.2f", transaccion.getMonto())).append("\n")
+                    .append("  Estado: ").append(transaccion.getEstado()).append("\n");
+
+            if (transaccion.getMotivo() != null && !transaccion.getMotivo().isBlank()) {
+                sb.append("  Motivo: ").append(transaccion.getMotivo()).append("\n");
+            }
         }
 
         return sb.toString();

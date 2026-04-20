@@ -1,28 +1,23 @@
-package BancoMatias.repository;
+package BancoMartino.servicios;
 
-import BancoMatias.entity.Transaccion;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Collections;
 
-public class TransaccionRepository {
+public class TransaccionRepositorio {
     private List<Transaccion> transacciones;
 
-    public TransaccionRepository() {
+    public TransaccionRepositorio() {
         this.transacciones = new ArrayList<>();
     }
 
-
-    public void save(Transaccion trans) {
-        if (trans != null) {
-            this.transacciones.add(trans);
+    public void guardar(Transaccion transaccion) {
+        if (transaccion != null) {
+            this.transacciones.add(transaccion);
         }
     }
-
     public List<Transaccion> findAll() {
         return transacciones;
     }
-
 
     public List<Transaccion> findByCbu(String cbu) {
         return transacciones.stream()
@@ -30,3 +25,4 @@ public class TransaccionRepository {
                 .toList();
     }
 }
+

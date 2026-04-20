@@ -1,7 +1,5 @@
 package BancoMartino.dominio;
 
-import Integration.CbuService;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -110,9 +108,5 @@ public class Cuenta {
 
     public void registrarMovimiento(TipoMovimiento tipo, double monto, String detalle) {
         movimientos.add(new Movimiento(tipo, monto, detalle));
-    }
-
-    public List<Movimiento> getMovimientos() {
-        return Collections.unmodifiableList(movimientos);
     }
 }
