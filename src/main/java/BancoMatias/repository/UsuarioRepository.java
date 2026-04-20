@@ -1,6 +1,7 @@
 package BancoMatias.repository;
 
 import BancoMatias.entity.*;
+import Integration.CbuService;
 
 import java.util.ArrayList;
 
@@ -15,7 +16,17 @@ public class UsuarioRepository {
         }
         return null;
     }
-
+    public UsuarioCliente buscarUsuarioClientePorCbu(String cbu) {
+        for (Sucursal suc : bandoDb.getSucursales()) {
+            if (suc.getCodigo().equals(CbuService.obtenerCodigoSucursal(cbu))) {
+                for (UsuarioCliente user : suc.getUsuariosActivos()) {
+                    if (user.getCbu().equals(cbu)) {
+                        return user;
+                    }
+                }
+            }
+        } return null;
+    }
 
     public boolean save(Usuario user) {
         if (user == null) return false;

@@ -1,14 +1,18 @@
 package BancoMartino.servicios;
 
 import BancoMartino.dominio.*;
+import BancoMatias.entity.enums.EstadoTransaccion;
+import Integration.ResultadoTransferencia;
 
 import java.util.List;
 
 public class AplicacionBanco {
     private final Banco banco;
+    private final TransactionService transactionService;
 
     public AplicacionBanco(Banco banco) {
         this.banco = banco;
+        this.transactionService = banco.getTransactionService();
     }
 
     public Admin loginAdmin(String codigoSucursal, String usuario, String password) {
@@ -70,7 +74,6 @@ public class AplicacionBanco {
 
     public void crearCuenta(
             Admin admin,
-            String numeroCuenta,
             String passwordCuenta,
             TipoCuenta tipo,
             String dni,
@@ -79,8 +82,7 @@ public class AplicacionBanco {
             String email,
             String direccion
     ) {
-        admin.darAltaCuenta(
-                numeroCuenta,
+        admin.darAltaCuenta(banco,
                 passwordCuenta,
                 tipo,
                 dni,
@@ -95,8 +97,8 @@ public class AplicacionBanco {
         admin.darBajaCuenta(numeroCuenta);
     }
 
-    public void transferir(Admin admin, String numeroOrigen, String numeroDestino, double monto) {
-        admin.transferir(numeroOrigen, numeroDestino, monto);
+    public ResultadoTransferencia transferir(String numeroOrigen, String numeroDestino, double monto) {
+        return transactionService.iniciarTransferencia(numeroOrigen, numeroDestino, monto);
     }
 
     public void depositar(Cuenta cuenta, double monto) {
@@ -107,8 +109,8 @@ public class AplicacionBanco {
         cuenta.extraer(monto);
     }
 
-    public Cuenta buscarCuenta(String numeroCuenta) {
-        Cuenta cuenta = banco.buscarCuentaPorNumero(numeroCuenta);
+    public Cuenta buscarCuenta(String cbu) {
+        Cuenta cuenta = banco.buscarCuentaPorCbu(cbu);
 
         if (cuenta == null) {
             throw new IllegalArgumentException("Cuenta inexistente.");
@@ -119,7 +121,7 @@ public class AplicacionBanco {
 
     public String resumenCuenta(Cuenta cuenta) {
         return "=== BALANCE CUENTA ===\n" +
-                "Número: " + cuenta.getNumero() + "\n" +
+                "CBU: " + cuenta.getCbu() + "\n" +
                 "Tipo: " + cuenta.getTipo() + "\n" +
                 "Titular: " + cuenta.getNombreCompleto() + "\n" +
                 "DNI: " + cuenta.getDni() + "\n" +
@@ -129,30 +131,75 @@ public class AplicacionBanco {
                 "Sucursal: " + cuenta.getSucursal().getNombre();
     }
 
-    public String resumenCuenta(String numeroCuenta) {
-        return resumenCuenta(buscarCuenta(numeroCuenta));
+    public String resumenCuenta(String cbu) {
+        return resumenCuenta(buscarCuenta(cbu));
     }
 
-    public String movimientosCuenta(String numeroCuenta) {
-        Cuenta cuenta = buscarCuenta(numeroCuenta);
+    public String transaccionesCuenta(String cbu) {
+        List<Transaccion> transacciones = transactionService.obtenerTransaccionesPorCbu(cbu);
+
+        List<Transaccion> transaccionesVisibles = transacciones.stream()
+                .filter(t ->
+                        t.getEstado() == EstadoTransaccion.EXITOSA ||
+                                t.getEstado() == EstadoTransaccion.FALLIDA ||
+                                t.getEstado() == EstadoTransaccion.RECHAZADA
+                )
+                .toList();
 
         StringBuilder sb = new StringBuilder();
-        sb.append("=== MOVIMIENTOS ===\n");
+        sb.append("=== TRANSACCIONES DE LA CUENTA ").append(cbu).append(" ===\n");
 
-        if (cuenta.getMovimientos().isEmpty()) {
-            sb.append("La cuenta no tiene movimientos.");
+        if (transaccionesVisibles.isEmpty()) {
+            sb.append("La cuenta no tiene transacciones registradas.");
             return sb.toString();
         }
 
+        int numero = 1;
+
+        for (Transaccion transaccion : transaccionesVisibles) {
+            boolean enviada = cbu.equals(transaccion.getCbuOrigen());
+            String tipo = enviada ? "TRANSFERENCIA ENVIADA" : "TRANSFERENCIA RECIBIDA";
+            String contraparte = enviada
+                    ? transaccion.getCbuDestino()
+                    : transaccion.getCbuOrigen();
+
+            sb.append("\n")
+                    .append(numero++)
+                    .append(")\n")
+                    .append("  Tipo: ").append(tipo).append("\n")
+                    .append("  Cuenta contraparte: ").append(contraparte).append("\n")
+                    .append("  Monto: $").append(String.format("%.2f", transaccion.getMonto())).append("\n")
+                    .append("  Estado: ").append(transaccion.getEstado()).append("\n");
+
+            if (transaccion.getMotivo() != null && !transaccion.getMotivo().isBlank()) {
+                sb.append("  Motivo: ").append(transaccion.getMotivo()).append("\n");
+            }
+        }
+
+        return sb.toString();
+    }
+
+    public String movimientosCuenta(String cbu) {
+        Cuenta cuenta = buscarCuenta(cbu);
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("=== MOVIMIENTOS DE LA CUENTA ").append(cuenta.getCbu()).append(" ===\n");
+
+        if (cuenta.getMovimientos().isEmpty()) {
+            sb.append("La cuenta no tiene movimientos registrados.");
+            return sb.toString();
+        }
+
+        int numero = 1;
+
         for (Movimiento movimiento : cuenta.getMovimientos()) {
-            sb.append(movimiento.getFecha())
-                    .append(" | ")
-                    .append(movimiento.getTipo())
-                    .append(" | $")
-                    .append(movimiento.getMonto())
-                    .append(" | ")
-                    .append(movimiento.getDetalle())
-                    .append("\n");
+            sb.append("\n")
+                    .append(numero++)
+                    .append(")\n")
+                    .append("  Fecha: ").append(movimiento.getFecha()).append("\n")
+                    .append("  Tipo: ").append(movimiento.getTipo()).append("\n")
+                    .append("  Monto: $").append(String.format("%.2f", movimiento.getMonto())).append("\n")
+                    .append("  Detalle: ").append(movimiento.getDetalle()).append("\n");
         }
 
         return sb.toString();

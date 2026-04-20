@@ -49,7 +49,5 @@ public class MenuBancario {
                 System.out.println("Error: " + e.getMessage());
             }
         }
-
-        scanner.close();
     }
 }

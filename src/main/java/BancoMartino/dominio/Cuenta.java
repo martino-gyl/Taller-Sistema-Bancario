@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class Cuenta {
-    private String numero;
+    private String cbu;
     private String password;
     private Sucursal sucursal;
     private double saldo;
@@ -20,7 +20,7 @@ public class Cuenta {
     private List<Movimiento> movimientos;
 
     public Cuenta(
-            String numero,
+            String cbu,
             String password,
             Sucursal sucursal,
             TipoCuenta tipo,
@@ -30,7 +30,7 @@ public class Cuenta {
             String email,
             String direccion
     ) {
-        this.numero = numero;
+        this.cbu = cbu;
         this.password = password;
         this.sucursal = sucursal;
         this.tipo = tipo;
@@ -43,8 +43,8 @@ public class Cuenta {
         this.movimientos = new ArrayList<>();
     }
 
-    public String getNumero() {
-        return numero;
+    public String getCbu() {
+        return cbu;
     }
 
     public TipoCuenta getTipo() {
@@ -110,7 +110,7 @@ public class Cuenta {
         movimientos.add(new Movimiento(tipo, monto, detalle));
     }
 
-    public List<Movimiento> getMovimientos() {
-        return Collections.unmodifiableList(movimientos);
+    public List<Movimiento> getMovimientos(){
+        return movimientos;
     }
 }

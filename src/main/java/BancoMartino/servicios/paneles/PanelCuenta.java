@@ -2,6 +2,7 @@ package BancoMartino.servicios.paneles;
 
 import BancoMartino.dominio.Cuenta;
 import BancoMartino.servicios.AplicacionBanco;
+import Integration.ResultadoTransferencia;
 
 import java.util.Scanner;
 
@@ -18,13 +19,15 @@ public class PanelCuenta extends Panel {
 
         while (!volver) {
             try {
-                System.out.println("\n--- PANEL CUENTA " + cuenta.getNumero() + " ---");
+                System.out.println("\n--- PANEL CUENTA " + cuenta.getEmail() + " ---");
                 System.out.println("1. Depositar");
                 System.out.println("2. Extraer");
-                System.out.println("3. Ver saldo");
-                System.out.println("4. Ver balance");
-                System.out.println("5. Ver movimientos");
-                System.out.println("6. Volver");
+                System.out.println("3. Transferir");
+                System.out.println("4. Ver saldo");
+                System.out.println("5. Ver balance");
+                System.out.println("6. Ver transacciones");
+                System.out.println("7. Ver movimientos");
+                System.out.println("8. Volver");
                 System.out.print("Opción: ");
 
                 int opcion = leerInt();
@@ -32,10 +35,12 @@ public class PanelCuenta extends Panel {
                 switch (opcion) {
                     case 1 -> depositar(cuenta);
                     case 2 -> extraer(cuenta);
-                    case 3 -> System.out.println("Saldo actual: $" + cuenta.getSaldo());
-                    case 4 -> System.out.println("\n" + getAplicacion().resumenCuenta(cuenta));
-                    case 5 -> System.out.println("\n" + getAplicacion().movimientosCuenta(cuenta.getNumero()));
-                    case 6 -> volver = true;
+                    case 3 -> transferir(cuenta);
+                    case 4 -> System.out.println("Saldo actual: $" + cuenta.getSaldo());
+                    case 5 -> System.out.println("\n" + getAplicacion().resumenCuenta(cuenta));
+                    case 6 -> System.out.println("\n" + getAplicacion().transaccionesCuenta(cuenta.getCbu()));
+                    case 7 -> System.out.println("\n" + getAplicacion().movimientosCuenta(cuenta.getCbu()));
+                    case 8 -> volver = true;
                     default -> System.out.println("Opción inválida.");
                 }
             } catch (IllegalArgumentException e) {
@@ -46,13 +51,13 @@ public class PanelCuenta extends Panel {
 
     private Cuenta loginCuenta() {
         System.out.println("\n--- LOGIN CUENTA ---");
-        System.out.print("Número de cuenta: ");
-        String numeroCuenta = leerTexto();
+        System.out.print("Email: ");
+        String email = leerTexto();
 
         System.out.print("Contraseña: ");
         String password = leerTexto();
 
-        return getAplicacion().loginCuenta(numeroCuenta, password);
+        return getAplicacion().loginCuenta(email, password);
     }
 
     private void depositar(Cuenta cuenta) {
@@ -69,5 +74,20 @@ public class PanelCuenta extends Panel {
 
         getAplicacion().extraer(cuenta, monto);
         System.out.println("Extracción realizada.");
+    }
+
+    private void transferir(Cuenta cuenta) {
+        System.out.print("CBU destino: ");
+        String cbuDestino = leerTexto();
+        System.out.print("Monto a transferir: ");
+        double monto = leerDouble();
+        String cbuOrigen = cuenta.getCbu();
+        ResultadoTransferencia resultado = getAplicacion().transferir(cbuOrigen, cbuDestino, monto);
+        if(resultado.fueExistoso){
+            System.out.println("Transferencia realizada correctamente.");
+        } else {
+            System.out.println("La transferencia no se pudo concretar, tuvo un error: " + resultado.mensaje);
+        }
+
     }
 }

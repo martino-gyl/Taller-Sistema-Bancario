@@ -1,8 +1,7 @@
-package BancoMatias.entity;
+package BancoMartino.servicios;
 
 import BancoMatias.entity.enums.EstadoTransaccion;
 
-import java.rmi.server.UID;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -60,6 +59,8 @@ public class Transaccion {
     public String getMotivo() {
         return motivo;
     }
+
+    public EstadoTransaccion getEstado(){return estado;}
 
     public void setMotivo(String motivo) {
         this.motivo = motivo;

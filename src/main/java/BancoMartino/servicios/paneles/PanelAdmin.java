@@ -28,8 +28,7 @@ public class PanelAdmin extends Panel {
                 System.out.println("4. Ver balance de la sucursal");
                 System.out.println("5. Ver balance de una cuenta");
                 System.out.println("6. Ver movimientos de una cuenta");
-                System.out.println("7. Transferir entre cuentas de la sucursal");
-                System.out.println("8. Volver");
+                System.out.println("7. Volver");
                 System.out.print("Opción: ");
 
                 int opcion = leerInt();
@@ -40,9 +39,8 @@ public class PanelAdmin extends Panel {
                     case 3 -> eliminarCuenta(admin);
                     case 4 -> System.out.println("Balance sucursal: $" + getAplicacion().balanceSucursal(admin));
                     case 5 -> verBalanceCuenta();
-                    case 6 -> verMovimientosCuenta();
-                    case 7 -> transferir(admin);
-                    case 8 -> volver = true;
+                    case 6 -> verTransaccionesCuenta();
+                    case 7 -> volver = true;
                     default -> System.out.println("Opción inválida.");
                 }
             } catch (IllegalArgumentException e) {
@@ -76,7 +74,7 @@ public class PanelAdmin extends Panel {
         System.out.println("\n--- CUENTAS DE LA SUCURSAL ---");
         for (Cuenta cuenta : cuentas) {
             System.out.println(
-                    "Número: " + cuenta.getNumero() +
+                    "CBU: " + cuenta.getCbu() +
                             " | Tipo: " + cuenta.getTipo() +
                             " | Titular: " + cuenta.getNombreCompleto() +
                             " | DNI: " + cuenta.getDni() +
@@ -101,9 +99,6 @@ public class PanelAdmin extends Panel {
         System.out.print("Dirección titular: ");
         String direccion = leerTexto();
 
-        System.out.print("Número de cuenta: ");
-        String numeroCuenta = leerTexto();
-
         System.out.print("Contraseña cuenta: ");
         String passwordCuenta = leerTexto();
 
@@ -111,7 +106,6 @@ public class PanelAdmin extends Panel {
 
         getAplicacion().crearCuenta(
                 admin,
-                numeroCuenta,
                 passwordCuenta,
                 tipo,
                 dni,
@@ -132,32 +126,18 @@ public class PanelAdmin extends Panel {
         System.out.println("Cuenta eliminada correctamente.");
     }
 
-    private void transferir(Admin admin) {
-        System.out.print("Número de cuenta origen: ");
-        String numeroOrigen = leerTexto();
-
-        System.out.print("Número de cuenta destino: ");
-        String numeroDestino = leerTexto();
-
-        System.out.print("Monto a transferir: ");
-        double monto = leerDouble();
-
-        getAplicacion().transferir(admin, numeroOrigen, numeroDestino, monto);
-        System.out.println("Transferencia realizada correctamente.");
-    }
-
     private void verBalanceCuenta() {
-        System.out.print("Número de cuenta: ");
-        String numeroCuenta = leerTexto();
+        System.out.print("Número de cbu: ");
+        String numeroCbu = leerTexto();
 
-        System.out.println("\n" + getAplicacion().resumenCuenta(numeroCuenta));
+        System.out.println("\n" + getAplicacion().resumenCuenta(numeroCbu));
     }
 
-    private void verMovimientosCuenta() {
+    private void verTransaccionesCuenta() {
         System.out.print("Número de cuenta: ");
         String numeroCuenta = leerTexto();
 
-        System.out.println("\n" + getAplicacion().movimientosCuenta(numeroCuenta));
+        System.out.println("\n" + getAplicacion().transaccionesCuenta(numeroCuenta));
     }
 
     private TipoCuenta leerTipoCuenta() {
