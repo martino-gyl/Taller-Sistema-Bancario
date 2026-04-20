@@ -329,7 +329,7 @@ public class Menu {
             System.out.println("No hay usuarios registrados en esta sucursal.");
         } else {
             for (UsuarioCliente u : usuarios) {
-                // Usamos %-18s para que la etiqueta ocupe 18 espacios y todo lo demás se alinee
+
                 System.out.printf("""
                  Nombre:          %s
                  CBU:             %s
@@ -445,24 +445,6 @@ public class Menu {
 
 
 
-    private void mostrarBalanceSucursal() {
-        System.out.println("\n=== BALANCE SUCURSAL: " + sucursalActual.getNombre() + " ===");
-        double total = 0;
-
-        ArrayList<UsuarioCliente> clientes = sucursalActual.getUsuariosActivos();
-
-        if (clientes.isEmpty()) {
-            System.out.println("No hay clientes registrados en esta sucursal.");
-        } else {
-            for (UsuarioCliente cliente : clientes) {
-                total += cliente.getSaldo();
-                System.out.printf("- %-20s | CBU: %s | Saldo: $%.2f%n",
-                        cliente.getName(), cliente.getCbu(), cliente.getSaldo());
-            }
-            System.out.println("--------------------------------------------------");
-            System.out.printf("TOTAL SUCURSAL: $%.2f%n", total);
-        }
-    }
 
 
 
