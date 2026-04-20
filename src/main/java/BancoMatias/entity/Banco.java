@@ -73,7 +73,7 @@ public final class Banco {
         ArrayList<UsuarioCliente> listaUsuariosParquePatricios = new ArrayList<>(Arrays.asList(user9, user10, user11, user12));
         sucursales.get(2).setUsuariosActivos(listaUsuariosParquePatricios);
 
-        String codSucParquePatricios = sucursales.get(1).getCodigo();
+        String codSucParquePatricios = sucursales.get(2).getCodigo();
         user9.setCbu(CbuService.generarCbu(CODIGO_BANCO_MATIAS, codSucParquePatricios, (int) user9.getId()));
         user10.setCbu(CbuService.generarCbu(CODIGO_BANCO_MATIAS, codSucParquePatricios, (int) user10.getId()));
         user11.setCbu(CbuService.generarCbu(CODIGO_BANCO_MATIAS, codSucParquePatricios, (int) user11.getId()));
