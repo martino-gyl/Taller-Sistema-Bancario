@@ -39,7 +39,7 @@ public class PanelAdmin extends Panel {
                     case 3 -> eliminarCuenta(admin);
                     case 4 -> System.out.println("Balance sucursal: $" + getAplicacion().balanceSucursal(admin));
                     case 5 -> verBalanceCuenta();
-                    case 6 -> verMovimientosCuenta();
+                    case 6 -> verTransaccionesCuenta();
                     case 7 -> volver = true;
                     default -> System.out.println("Opción inválida.");
                 }
@@ -133,11 +133,11 @@ public class PanelAdmin extends Panel {
         System.out.println("\n" + getAplicacion().resumenCuenta(numeroCbu));
     }
 
-    private void verMovimientosCuenta() {
+    private void verTransaccionesCuenta() {
         System.out.print("Número de cuenta: ");
         String numeroCuenta = leerTexto();
 
-        System.out.println("\n" + getAplicacion().movimientosCuenta(numeroCuenta));
+        System.out.println("\n" + getAplicacion().transaccionesCuenta(numeroCuenta));
     }
 
     private TipoCuenta leerTipoCuenta() {
