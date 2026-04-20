@@ -42,7 +42,7 @@ public class Banco {
         return cbuService.generarCbu(
                 codigoBanco,
                 sucursal.getCodigo(),
-                sucursal.siguienteNumeroCuenta()
+                sucursal.obtenerSiguienteNumeroCuenta()
         );
     }
 
