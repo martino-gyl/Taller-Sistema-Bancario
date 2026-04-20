@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 public class Mediator {
-   // private List<ITransactionService> bancos;
     private Map<String, ITransactionService> bancos;
 
     public Mediator(Map<String, ITransactionService> bancos) {

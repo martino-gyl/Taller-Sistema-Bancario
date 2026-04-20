@@ -46,13 +46,6 @@ public class TransaccionService implements ITransactionService {
         return monto>0;
     }
 
-    public void cargarMovimientoDeTransferenciaEnviada(String cbuOrigen, String cbuDestino, double monto) {
-
-    }
-
-    public void cargarMovimientoDeTransferenciaRecibida(String cbuOrigen, String cbuDestino, double monto) {
-
-    }
 
     public ResultadoTransferencia iniciarTransferencia(String cbuOrigen, String cbuDestino, double monto) {
         Transaccion intento = new Transaccion(cbuOrigen, cbuDestino, monto, EstadoTransaccion.PENDIENTE);
@@ -91,7 +84,7 @@ public class TransaccionService implements ITransactionService {
     public void depositarPorCbu(String cbuOrigen, String cbuDestino, double monto) {
         UsuarioCliente cuenta = usuarioRepo.buscarUsuarioClientePorCbu(cbuDestino);
         cuenta.sumarSaldo(monto);
-        transaccionRepo.save(new Transaccion(cbuOrigen, cbuDestino, monto, EstadoTransaccion.CONFIRMADA));
+        transaccionRepo.save(new Transaccion(cbuOrigen, cbuDestino, monto, EstadoTransaccion.EXITOSA));
     }
 
     @Override
