@@ -63,7 +63,7 @@ public class TransactionService implements ITransactionService {
     public void depositarPorCbu(String cbuOrigen, String cbuDestino, double monto) {
         Cuenta cuentaDestino = banco.buscarCuentaPorCbu(cbuDestino);
         cuentaDestino.sumarSaldo(monto);
-        transaccionRepositorio.guardar(new Transaccion(cbuOrigen, cbuDestino, monto, EstadoTransaccion.CONFIRMADA));
+        transaccionRepositorio.guardar(new Transaccion(cbuOrigen, cbuDestino, monto, EstadoTransaccion.EXITOSA));
     }
 
     @Override

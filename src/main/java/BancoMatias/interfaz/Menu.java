@@ -218,29 +218,6 @@ public class Menu {
     private void solicitarBaja() {
     }
 
-//    private void procesarTransferencia() {
-//        System.out.println("Para hacer una transferencia escriba el mail del usuario al que desea transferir");
-//        System.out.println("Mail: ");
-//        String mail = teclado.nextLine().toLowerCase();
-//        System.out.println("Ingrese el monto que desea transferir: ");
-//        double montoATransferir = teclado.nextDouble();
-//        UsuarioCliente emisor = userService.buscarUsuarioClientePorMail(sesionActiva.getMail());
-//        UsuarioCliente destinatario = userService.buscarUsuarioClientePorMail(mail);
-//       if(destinatario != null){
-//           if(transService.transferir(emisor, destinatario, montoATransferir)){
-//               System.out.println("El usuario " + emisor.getName() + " transfirio $" + montoATransferir + " al usuario " + destinatario.getName());
-//               System.out.println("-----------------------------");
-//           }else{
-//               System.out.println("La Transaccion de " + emisor.getName() +"a " + destinatario.getName() + " fallo por saldo insuficiente");
-//               System.out.println("-----------------------------");
-//           }
-//
-//       } else{
-//           System.out.println("No se encuentra al destinatario");
-//           System.out.println("-----------------------------");
-//       }
-//
-//    }
 
 
     private void procesarTransferencia() {
