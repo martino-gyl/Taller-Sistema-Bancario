@@ -4,6 +4,7 @@ import BancoMatias.entity.*;
 import Integration.CbuService;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class UsuarioRepository {
     private Banco bandoDb = Banco.getInstancia();

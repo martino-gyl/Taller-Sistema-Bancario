@@ -38,6 +38,9 @@ public class MenuPrincipal {
                 }
             } catch (NumberFormatException e) {
                 System.out.println("Debe ingresar un número válido.");
+            } catch (Exception e) {
+                System.out.println("⚠️ Ocurrió un error inesperado: " + e.getMessage());
+                System.out.println("Volviendo al menú principal...");
             }
         }
     }

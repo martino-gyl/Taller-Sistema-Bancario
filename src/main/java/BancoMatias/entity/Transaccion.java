@@ -1,6 +1,7 @@
 package BancoMatias.entity;
 
 import BancoMatias.entity.enums.EstadoTransaccion;
+import BancoMatias.entity.enums.TipoDeTransaccion;
 
 import java.rmi.server.UID;
 import java.time.LocalDateTime;
@@ -14,6 +15,7 @@ public class Transaccion {
     private EstadoTransaccion estado;
     private String motivo;
     private LocalDateTime fecha;
+    private TipoDeTransaccion tipoDeTransaccion;
 
     public Transaccion(String origen, String destino, double monto, EstadoTransaccion estado) {
         this.id = UUID.randomUUID();
@@ -22,6 +24,7 @@ public class Transaccion {
         this.monto = monto;
         this.estado = estado;
         this.fecha = LocalDateTime.now();
+        this.tipoDeTransaccion = TipoDeTransaccion.EGRESO;
     }
 
     public String getCbuOrigen() {
@@ -44,6 +47,12 @@ public class Transaccion {
         return cbuDestino;
     }
 
+    public TipoDeTransaccion getTipoDeTransaccion() { return tipoDeTransaccion; }
+
+    public void setTipoDeTransaccion(TipoDeTransaccion tipoDeTransaccion) {
+        this.tipoDeTransaccion = tipoDeTransaccion;
+    }
+
     public void setCbuDestino(String cbuDestino) {
         this.cbuDestino = cbuDestino;
     }
@@ -64,4 +73,33 @@ public class Transaccion {
     public void setMotivo(String motivo) {
         this.motivo = motivo;
     }
-}
+
+    public EstadoTransaccion getEstado() {
+        return estado;
+    }
+
+    @Override
+    public String toString() {
+        java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        String fechaFormateada = (fecha != null) ? fecha.format(formatter) : "Sin fecha";
+
+        String idCorto = id.toString().substring(0, 8).toUpperCase();
+
+        String signo = (this.tipoDeTransaccion == BancoMatias.entity.enums.TipoDeTransaccion.INGRESO) ? "[+]" : "[-]";
+
+        return String.format(
+                " %s [#%s] %s | %-8s | %-12s | $%8.2f | De: %s -> A: %s | Motivo: %s",
+                signo,
+                idCorto,
+                fechaFormateada,
+                tipoDeTransaccion,
+                estado,
+                monto,
+                cbuOrigen,
+                cbuDestino,
+                (motivo != null ? motivo : "N/A")
+        );
+    }
+
+
+    }
