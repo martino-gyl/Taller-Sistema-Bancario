@@ -178,4 +178,30 @@ public class AplicacionBanco {
 
         return sb.toString();
     }
+
+    public String movimientosCuenta(String cbu) {
+        Cuenta cuenta = buscarCuenta(cbu);
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("=== MOVIMIENTOS DE LA CUENTA ").append(cuenta.getCbu()).append(" ===\n");
+
+        if (cuenta.getMovimientos().isEmpty()) {
+            sb.append("La cuenta no tiene movimientos registrados.");
+            return sb.toString();
+        }
+
+        int numero = 1;
+
+        for (Movimiento movimiento : cuenta.getMovimientos()) {
+            sb.append("\n")
+                    .append(numero++)
+                    .append(")\n")
+                    .append("  Fecha: ").append(movimiento.getFecha()).append("\n")
+                    .append("  Tipo: ").append(movimiento.getTipo()).append("\n")
+                    .append("  Monto: $").append(String.format("%.2f", movimiento.getMonto())).append("\n")
+                    .append("  Detalle: ").append(movimiento.getDetalle()).append("\n");
+        }
+
+        return sb.toString();
+    }
 }

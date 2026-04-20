@@ -109,4 +109,8 @@ public class Cuenta {
     public void registrarMovimiento(TipoMovimiento tipo, double monto, String detalle) {
         movimientos.add(new Movimiento(tipo, monto, detalle));
     }
+
+    public List<Movimiento> getMovimientos(){
+        return movimientos;
+    }
 }

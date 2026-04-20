@@ -26,7 +26,8 @@ public class PanelCuenta extends Panel {
                 System.out.println("4. Ver saldo");
                 System.out.println("5. Ver balance");
                 System.out.println("6. Ver transacciones");
-                System.out.println("7. Volver");
+                System.out.println("7. Ver movimientos");
+                System.out.println("8. Volver");
                 System.out.print("Opción: ");
 
                 int opcion = leerInt();
@@ -38,7 +39,8 @@ public class PanelCuenta extends Panel {
                     case 4 -> System.out.println("Saldo actual: $" + cuenta.getSaldo());
                     case 5 -> System.out.println("\n" + getAplicacion().resumenCuenta(cuenta));
                     case 6 -> System.out.println("\n" + getAplicacion().transaccionesCuenta(cuenta.getCbu()));
-                    case 7 -> volver = true;
+                    case 7 -> System.out.println("\n" + getAplicacion().movimientosCuenta(cuenta.getCbu()));
+                    case 8 -> volver = true;
                     default -> System.out.println("Opción inválida.");
                 }
             } catch (IllegalArgumentException e) {
