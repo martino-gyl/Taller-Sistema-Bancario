@@ -399,12 +399,14 @@ public class Menu {
     private void listarUsuariosGlobales() {
         System.out.println("\n--- LISTADO GLOBAL DE USUARIOS ---");
         ArrayList<Sucursal> sucursales = Banco.getInstancia().getSucursales();
+        int contador = 1;
         boolean hayUsuarios = false;
 
         for (Sucursal suc : sucursales) {
             for (UsuarioCliente u : suc.getUsuariosActivos()) {
                 // Formato: Nombre. Tipo, sucursal Nombre, balance $...
-                System.out.printf("%s. %s, sucursal %s, balance $%.2f%n",
+                System.out.printf("[%d] %s. %s, sucursal %s, balance $%.2f%n",
+                        contador++,
                         u.getName(),
                         u.getTipoDeCuenta(),
                         suc.getNombre(),

@@ -38,6 +38,12 @@ public class UsuarioRepository {
 
         suc.getUsuariosActivos().add(user);
         user.setEstaActivado(true);
+        String nuevoCbu = Integration.CbuService.generarCbu(
+                Banco.CODIGO_BANCO_MATIAS,
+                suc.getCodigo(),
+                (int) user.getId()
+        );
+        user.setCbu(nuevoCbu);
 
         return true;
     }
