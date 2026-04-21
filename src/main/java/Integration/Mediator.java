@@ -13,7 +13,10 @@ public class Mediator {
     public ResultadoTransferencia transferir(String cbuOrigen, String cbuDestino, double monto) {
         try {
             ITransactionService origen = buscarBanco(cbuOrigen);
-            ITransactionService destino = buscarBanco(cbuDestino);
+            ITransactionService destino = buscarBanco(cbuDestino) ;
+
+            if (origen == null) {throw new Exception("El banco emisor (CBU Origen) no está registrado en la red.");}
+            if (destino == null) {throw new Exception("El banco receptor (CBU Destino) no pertenece a la red interbancaria.");}
 
             destino.validarCapacidadDeRecepcion(cbuDestino, monto);
 
